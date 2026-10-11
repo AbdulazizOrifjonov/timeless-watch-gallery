@@ -341,6 +341,41 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:35:00.000Z",
     updated_at: "2025-01-26T10:35:00.000Z",
   },
+  {
+    id: "p-casio-edifice-octagonal-solar-sapphire",
+    name: "Casio Edifice Slim Octagonal Solar Sapphire Chronograph",
+    slug: "casio-edifice-slim-octagonal-solar-sapphire-chronograph",
+    description: "Original Casio Edifice — nufuzli sakkizburchak (Octagonal sport-klassik) bezel va nozik korpusli quyosh energiyasida ishlovchi yapon xronografi. Qirilmaydigan sapfir kristall shisha (Sapphire Crystal), to'liq zanglamas po'lat braslet va korpus, 10 ATM (100 metr) suvga chidamlilik. Akkumulyator quvvati ko'rsatkichi (High/Mid/Low), sekundomer, sana darchasi. Komplektda: original quti, hujjatlar va 2 yil rasmiy kafolat bilan.",
+    price: 2750000,
+    old_price: 3200000,
+    discount: 14,
+    category_id: "cat-kvars-soatlari",
+    brand: "Casio",
+    stock: 6,
+    sku: "CAS-EDIFICE-OCT-SOLAR",
+    rating: 5.0,
+    reviews_count: 9,
+    image: "/products/casio_edifice_octagonal_solar_sapphire.png",
+    images: [
+      { id: "img-edifice-oct-1", url: "/products/casio_edifice_octagonal_solar_sapphire.png", sort_order: 1 },
+      { id: "img-edifice-oct-2", url: "/products/casio_edifice_octagonal_solar_sapphire.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus dizayni": "44 mm, Sakkizburchakli (Octagonal) nufuzli dizayn",
+      "Korpus va braslet": "Zanglamas po'lat 316L (Solid Stainless Steel)",
+      "Mexanizm": "Casio Solar-Powered (Quyosh energiyali kvars)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Funksiyalar": "Xronograf sekundomer, Quvvat darajasi (H/M/L), Sana",
+      "Suvga chidamlilik": "10 ATM / 100 metr",
+      "Komplektatsiya": "Original Edifice qutisi, hujjatlar, xalqaro kafolat kartasi",
+      "Kafolat": "Mexanizmiga 2 yil rasmiy kafolat"
+    },
+    mechanism: "Kvars (Solar-Powered)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:40:00.000Z",
+    updated_at: "2025-01-26T10:40:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
