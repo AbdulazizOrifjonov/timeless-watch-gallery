@@ -16,15 +16,15 @@ export const metadata: Metadata = {
     "Timeless The Watch Gallery — Original va hashamatli soatlar galereyasi. Premium erkaklar va ayollar soatlari to'plami, rasmiy kafolat va tezkor yetkazib berish.",
   icons: {
     icon: [
-      { url: "/favicon.ico?v=gold", sizes: "any" },
-      { url: "/favicon-32x32.png?v=gold", type: "image/png", sizes: "32x32" },
-      { url: "/favicon-16x16.png?v=gold", type: "image/png", sizes: "16x16" },
-      { url: "/icon.png?v=gold", type: "image/png", sizes: "512x512" },
-      { url: "/icon-192.png?v=gold", type: "image/png", sizes: "192x192" },
+      { url: "/icon.png?v=t-gold", type: "image/png", sizes: "512x512" },
+      { url: "/favicon-32x32.png?v=t-gold", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16x16.png?v=t-gold", type: "image/png", sizes: "16x16" },
+      { url: "/favicon.ico?v=t-gold", sizes: "any" },
+      { url: "/icon-192.png?v=t-gold", type: "image/png", sizes: "192x192" },
     ],
-    shortcut: ["/favicon.ico?v=gold"],
+    shortcut: ["/icon.png?v=t-gold"],
     apple: [
-      { url: "/apple-touch-icon.png?v=gold", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.png?v=t-gold", sizes: "180x180", type: "image/png" },
     ],
   },
 };
@@ -35,13 +35,13 @@ export default function RootLayout({
   return (
     <html lang="uz">
       <head>
-        <link rel="icon" href="/favicon.ico?v=gold" sizes="any" />
-        <link rel="icon" href="/favicon-32x32.png?v=gold" type="image/png" sizes="32x32" />
-        <link rel="icon" href="/favicon-16x16.png?v=gold" type="image/png" sizes="16x16" />
-        <link rel="icon" href="/icon.png?v=gold" type="image/png" sizes="512x512" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=gold" sizes="180x180" />
-        <link rel="shortcut icon" href="/favicon.ico?v=gold" />
-        <meta name="theme-color" content="#1B120C" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon.png?v=t-gold" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=t-gold" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=t-gold" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=t-gold" />
+        <link rel="shortcut icon" type="image/png" href="/icon.png?v=t-gold" />
+        <link rel="icon" href="/favicon.ico?v=t-gold" sizes="any" />
+        <meta name="theme-color" content="#2A160F" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
