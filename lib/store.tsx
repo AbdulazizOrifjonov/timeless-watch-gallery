@@ -138,17 +138,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
               setPromocodes(DEFAULT_PROMOCODES);
             }
           }
-          const validSliders = s.filter((item) => !item.id.startsWith("system_") && !item.image_url?.includes("images.unsplash.com"));
+          const validSliders = s.filter((item) => !item.id.startsWith("system_") && item.image_url?.startsWith("http"));
           if (validSliders.length >= 5) {
             setSliders(validSliders);
           } else {
-            const merged = [...DEFAULT_SLIDERS];
-            for (const vs of validSliders) {
-              const idx = merged.findIndex((x) => x.id === vs.id);
-              if (idx >= 0) merged[idx] = vs;
-              else merged.push(vs);
-            }
-            setSliders(merged);
+            setSliders(DEFAULT_SLIDERS);
           }
         }
         if (o) {
