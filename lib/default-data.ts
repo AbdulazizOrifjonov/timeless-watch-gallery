@@ -63,7 +63,42 @@ export const DEFAULT_CATEGORIES: Category[] = [
   },
 ];
 
-export const DEFAULT_PRODUCTS: Product[] = [];
+export const DEFAULT_PRODUCTS: Product[] = [
+  {
+    id: "p-orient-bambino-sun-moon",
+    name: "Orient Bambino Sun & Moon Automatic",
+    slug: "orient-bambino-sun-moon-automatic",
+    description: "Orient Bambino Sun & Moon — nafis yapon klassikasi. Quyosh va oy fazasi ko'rsatkichi (Sun & Moon), hafta kunlari va sana sub-displeyli siferblat, Rim raqamlari, gumbazsimon kristall shisha, qora tabiiy charm tasma va ishonchli yapon avtomatik mexanizmi.",
+    price: 3950000,
+    old_price: 4500000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Orient",
+    stock: 5,
+    sku: "ORT-BAMBINO-SM",
+    rating: 5.0,
+    reviews_count: 7,
+    image: "/products/orient_bambino_sun_moon.png",
+    images: [
+      { id: "img-orient-1", url: "/products/orient_bambino_sun_moon.png", sort_order: 1 },
+      { id: "img-orient-2", url: "/products/orient_bambino_sun_moon.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "42 mm",
+      "Korpus materiali": "Zanglamas po'lat 316L",
+      "Mexanizm": "Orient Cal. F6B24 Avtomatik (Yaponiya)",
+      "Shisha turi": "Gumbazsimon mineral kristall",
+      "Tasma": "Tabiiy qora charm (Alligator teksturali)",
+      "Funksiyalar": "Sun & Moon indikatori, Sana, Hafta kuni",
+      "Suvga chidamlilik": "50 metr / 5 BAR"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:00:00.000Z",
+    updated_at: "2025-01-26T10:00:00.000Z",
+  },
+];
 
 export const DEFAULT_SLIDERS: Slider[] = [
   {
