@@ -560,6 +560,44 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:05:00.000Z",
     updated_at: "2025-01-26T11:05:00.000Z",
   },
+  {
+    id: "p-tissot-le-locle-powermatic-80-black",
+    name: "Tissot Le Locle Powermatic 80 Black Dial 🇨🇭",
+    slug: "tissot-le-locle-powermatic-80-black-dial",
+    description: "Original Shveytsariya brendi Tissot'dan jahonga mashhur Le Locle Powermatic 80 modeli — Shveytsariya soatsozligining beshigi sharafiga nomlangan klassika timsoli. 80 soatlik ulkan quvvat zaxirasiga ega avtomatik mexanizm (Powermatic 80). 'Clous de Paris' naqshli hashamatli qora siferblat, Rim raqamlari, bargsimon nafis strelkalar va sana darchasi. Qirilishdan himoyalangan sapfir kristall shisha (Sapphire Crystal), 316L zanglamas po'lat korpus, naqshinkor orqa qopqoq va tabiiy qora charm tasma. 2 yil xalqaro rasmiy kafolat bilan. Narxi: $650.",
+    price: 8320000,
+    old_price: 9500000,
+    discount: 12,
+    category_id: "cat-shveytsariya-soatlari",
+    brand: "Tissot",
+    stock: 4,
+    sku: "TIS-LE-LOCLE-PM80-BLK",
+    rating: 5.0,
+    reviews_count: 16,
+    image: "/products/tissot_le_locle_powermatic_80_black.png",
+    images: [
+      { id: "img-tissot-lelocle-1", url: "/products/tissot_le_locle_powermatic_80_black.png", sort_order: 1 },
+      { id: "img-tissot-lelocle-2", url: "/products/tissot_le_locle_powermatic_80_black.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi davlat": "Shveytsariya (Swiss Made 🇨🇭)",
+      "Korpus o'lchami": "39.5 mm",
+      "Korpus materiali": "316L zanglamas tibbiy po'lat (Solid Stainless Steel)",
+      "Mexanizm": "Swiss Powermatic 80.111 Avtomatik (80 soat quvvat zaxirasi)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Tasma": "Tabiiy qora charm (Alligator naqshli, Tissot kapalak qisqich)",
+      "Funksiyalar": "Clous de Paris naqshli siferblat, Rim raqamlari, Sana, Gravirovka qilingan orqa qopqoq",
+      "Suvga chidamlilik": "30 metr / 3 BAR",
+      "Komplektatsiya": "Original hashamatli Tissot qutisi, hujjatlar, xalqaro kafolat taloni",
+      "Kafolat": "2 yil xalqaro rasmiy kafolat",
+      "Valyuta narxi": "$650"
+    },
+    mechanism: "Avtomatik mexanik (Powermatic 80)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:10:00.000Z",
+    updated_at: "2025-01-26T11:10:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
