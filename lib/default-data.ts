@@ -578,7 +578,8 @@ export const DEFAULT_PRODUCTS: Product[] = [
     image: "/products/tissot_le_locle_powermatic_80_black.png",
     images: [
       { id: "img-tissot-lelocle-1", url: "/products/tissot_le_locle_powermatic_80_black.png", sort_order: 1 },
-      { id: "img-tissot-lelocle-2", url: "/products/tissot_le_locle_powermatic_80_black.png", sort_order: 2 }
+      { id: "img-tissot-lelocle-2", url: "/products/tissot_le_locle_store_hand.jpg", sort_order: 2 },
+      { id: "img-tissot-lelocle-3", url: "/products/tissot_le_locle_store_hand.jpg", sort_order: 3 }
     ],
     specifications: {
       "Ishlab chiqaruvchi davlat": "Shveytsariya (Swiss Made 🇨🇭)",
