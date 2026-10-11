@@ -449,6 +449,42 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:50:00.000Z",
     updated_at: "2025-01-26T10:50:00.000Z",
   },
+  {
+    id: "p-orient-bambino-rose-gold-classic",
+    name: "Orient Bambino Rose Gold Classic Automatic",
+    slug: "orient-bambino-rose-gold-classic-automatic",
+    description: "Orient Bambino Rose Gold — nozik pushti tilla (Rose Gold PVD) qoplamali nafis korpus va shaffof oq siferblatli yapon klassik avtomatik soati. O'tkir fasetlangan qirrali tilla indekslar, dauphine strelkalar, soat 3 da sana darchasi va to'q jigarrang tabiiy charm tasma. Sapfir kristall shisha va ishonchli yapon avtomatik mexanizmi. Original qutisi, hujjatlari va 2 yil rasmiy kafolat bilan.",
+    price: 3000000,
+    old_price: 3450000,
+    discount: 13,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Orient",
+    stock: 5,
+    sku: "ORT-BAMBINO-RG-WHT",
+    rating: 5.0,
+    reviews_count: 8,
+    image: "/products/orient_bambino_rose_gold_white_dial.png",
+    images: [
+      { id: "img-bambino-rg-1", url: "/products/orient_bambino_rose_gold_white_dial.png", sort_order: 1 },
+      { id: "img-bambino-rg-2", url: "/products/orient_bambino_rose_gold_white_dial.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "40 mm",
+      "Korpus materiali": "Rose Gold PVD qoplamali zanglamas po'lat 316L",
+      "Mexanizm": "Orient Cal. F6724 Avtomatik (Yaponiya)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Tasma": "Tabiiy to'q jigarrang charm (Alligator naqshli)",
+      "Funksiyalar": "Sana darchasi, Qo'lda burash & Hacking",
+      "Suvga chidamlilik": "30 metr / 3 BAR",
+      "Komplektatsiya": "Original Orient qutisi, hujjatlar, kafolat taloni",
+      "Kafolat": "Mexanizmiga 2 yil rasmiy kafolat"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:55:00.000Z",
+    updated_at: "2025-01-26T10:55:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
