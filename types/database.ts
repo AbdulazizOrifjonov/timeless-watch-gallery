@@ -18,7 +18,7 @@ export interface Category {
 
 export interface ProductImage {
   id: string;
-  product_id: string;
+  product_id?: string;
   url: string;
   sort_order: number;
 }
@@ -46,7 +46,7 @@ export interface Product {
   is_active: boolean;
   is_new?: boolean;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export interface Slider {

@@ -31,10 +31,7 @@ export const ProductCard = React.memo(function ProductCard({
   const discount = product.discount ?? calcDiscount(product.price, product.old_price);
   const outOfStock = product.stock <= 0;
 
-  const getProductFullUrl = () => {
-    return getProductPublicUrl(product.slug || product.id);
-  };
-
+  const productUrl = `/products/${product.slug || product.id}`;
 
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartXRef = useRef<number | null>(null);
@@ -73,26 +70,34 @@ export const ProductCard = React.memo(function ProductCard({
     const touch = e.touches[0];
     const diffX = touch.clientX - touchStartXRef.current;
     const diffY = touch.clientY - (touchStartYRef.current ?? touch.clientY);
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 15) {
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 30) {
       hasSwipedRef.current = true;
     }
   };
 
   const onTouchEndAction = (e: React.TouchEvent) => {
-    if (touchStartXRef.current === null || images.length <= 1) return;
+    if (touchStartXRef.current === null || images.length <= 1) {
+      hasSwipedRef.current = false;
+      return;
+    }
     const touch = e.changedTouches[0];
     const diffX = touch.clientX - touchStartXRef.current;
     const diffY = touch.clientY - (touchStartYRef.current ?? touch.clientY);
     touchStartXRef.current = null;
     touchStartYRef.current = null;
 
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 25) {
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 35) {
       hasSwipedRef.current = true;
       if (diffX < 0) {
         handleNext();
       } else {
         handlePrev();
       }
+      setTimeout(() => {
+        hasSwipedRef.current = false;
+      }, 300);
+    } else {
+      hasSwipedRef.current = false;
     }
   };
 
@@ -141,7 +146,7 @@ export const ProductCard = React.memo(function ProductCard({
         {(discount > 0 || product.is_new) && (
           <span
             className={cn(
-              "absolute left-1.5 top-1.5 sm:left-2 sm:top-2 z-20 rounded px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold tracking-wider uppercase shadow-xs",
+              "absolute left-1.5 top-1.5 sm:left-2 sm:top-2 z-20 rounded px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold tracking-wider uppercase shadow-xs pointer-events-none",
               discount > 0 ? "bg-[#C5A059] text-white" : "bg-[#5E3023] text-[#C5A059] border border-[#C5A059]/30"
             )}
           >
@@ -155,9 +160,9 @@ export const ProductCard = React.memo(function ProductCard({
         </span>
 
         <Link 
-          href={`/products/${product.slug}`} 
+          href={productUrl} 
           onClick={onLinkClickHandler}
-          className="relative block h-full w-full z-10 select-none overflow-hidden"
+          className="relative block h-full w-full z-10 select-none overflow-hidden cursor-pointer"
           onTouchStart={images.length > 1 ? onTouchStartHandler : undefined}
           onTouchMove={images.length > 1 ? onTouchMoveHandler : undefined}
           onTouchEnd={images.length > 1 ? onTouchEndAction : undefined}
@@ -221,25 +226,28 @@ export const ProductCard = React.memo(function ProductCard({
       </div>
 
       <div className={cn("flex flex-1 flex-col", variant === "full" && "pr-8 sm:pr-12")}>
-        {product.brand && (
-          <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-navy-900/55 mb-0.5 block font-mono leading-none">
-            {product.brand}
-          </span>
-        )}
-        <Link href={`/products/${product.slug}`} className="mb-0.5 sm:mb-1 line-clamp-2 text-[12px] sm:text-sm font-semibold text-navy-900 hover:text-gold-500 md:text-base leading-snug">
-          {product.name}
-        </Link>
-        <p className="mb-1 sm:mb-1.5 text-[10px] sm:text-xs text-navy-900/50 md:text-sm leading-none">{categoryName}</p>
-        <RatingStars rating={product.rating ?? 0} reviews={product.reviews_count} size={12} />
-        
-        {variant === "full" && (
-          <p className="mt-2 hidden text-sm text-navy-900/70 md:line-clamp-2">
-            {product.description}
-          </p>
-        )}
+        <Link 
+          href={productUrl}
+          className="group/details block flex-1 cursor-pointer focus:outline-none"
+        >
+          {product.brand && (
+            <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-navy-900/55 mb-0.5 block font-mono leading-none">
+              {product.brand}
+            </span>
+          )}
+          <h3 className="mb-0.5 sm:mb-1 line-clamp-2 text-[12px] sm:text-sm font-semibold text-navy-900 group-hover/details:text-[#C5A059] md:text-base leading-snug transition-colors">
+            {product.name}
+          </h3>
+          <p className="mb-1 sm:mb-1.5 text-[10px] sm:text-xs text-navy-900/50 md:text-sm leading-none">{categoryName}</p>
+          <RatingStars rating={product.rating ?? 0} reviews={product.reviews_count} size={12} />
+          
+          {variant === "full" && (
+            <p className="mt-2 hidden text-sm text-navy-900/70 md:line-clamp-2">
+              {product.description}
+            </p>
+          )}
 
-        <div className={cn("mt-auto pt-[3px] sm:pt-3", variant === "full" ? "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" : "")}>
-          <div className={cn("mb-[3px] sm:mb-2", variant === "full" ? "mb-0" : "")}>
+          <div className="pt-[3px] sm:pt-2 mb-[3px] sm:mb-2">
             <div className="text-[13px] sm:text-[15px] md:text-lg font-bold text-navy-900 leading-tight">
               {formatSom(product.price)}
             </div>
@@ -249,8 +257,9 @@ export const ProductCard = React.memo(function ProductCard({
               </div>
             )}
           </div>
+        </Link>
 
-          <div className={cn("flex items-center gap-[3px] sm:gap-2", variant === "full" ? "w-full sm:w-auto sm:min-w-[230px]" : "w-full")}>
+        <div className={cn("mt-auto", variant === "full" ? "w-full sm:w-auto sm:min-w-[230px]" : "w-full")}>
             <div className="flex-1">
               {cartItem ? (
                 <div className="flex h-8 sm:h-11 w-full items-center justify-between gap-[3px] sm:gap-2">
@@ -294,11 +303,9 @@ export const ProductCard = React.memo(function ProductCard({
                 </button>
               )}
             </div>
-
           </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  });
 
