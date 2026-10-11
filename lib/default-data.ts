@@ -376,6 +376,43 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:40:00.000Z",
     updated_at: "2025-01-26T10:40:00.000Z",
   },
+  {
+    id: "p-tissot-gentleman-powermatic-80-open-heart",
+    name: "Tissot Gentleman Powermatic 80 Open Heart 🇨🇭",
+    slug: "tissot-gentleman-powermatic-80-open-heart",
+    description: "Original Shveytsariya brendi Tissot'dan afsonaviy Gentleman Powermatic 80 Open Heart modeli. 80 soatlik quvvat zaxirasiga ega Shveytsariya avtomatik mexanizmi (Powermatic 80) va antimagnit Nivachron prujinasi. Soat 12 da ochiq mexanizm yurishi (Open Heart), qirilmaydigan antirefleksli sapfir kristall shisha, pushti tilla PVD indekslar va yaltiroq po'lat korpus. 100 metr (10 ATM) suvga chidamlilik. Narxi: $900 (11 500 000 so'm). Original qutisi va xalqaro sertifikati bilan.",
+    price: 11500000,
+    old_price: 13000000,
+    discount: 12,
+    category_id: "cat-shveytsariya-soatlari",
+    brand: "Tissot",
+    stock: 3,
+    sku: "TIS-GENTLEMAN-PM80-OH",
+    rating: 5.0,
+    reviews_count: 12,
+    image: "/products/tissot_gentleman_powermatic_80_open_heart.png",
+    images: [
+      { id: "img-tissot-pm80-1", url: "/products/tissot_gentleman_powermatic_80_open_heart.png", sort_order: 1 },
+      { id: "img-tissot-pm80-2", url: "/products/tissot_gentleman_powermatic_80_open_heart.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi davlat": "Shveytsariya (Swiss Made 🇨🇭)",
+      "Korpus o'lchami": "40 mm",
+      "Korpus va braslet": "316L zanglamas tibbiy po'lat (Solid Stainless Steel)",
+      "Mexanizm": "Swiss Powermatic 80.601 Avtomatik (80 soat quvvat zaxirasi)",
+      "Xususiyat": "Open Heart (Ochiq balans), Nivachron antimagnit prujina",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Suvga chidamlilik": "10 ATM / 100 metr",
+      "Komplektatsiya": "Original hashamatli Tissot qutisi, hujjatlar, xalqaro kafolat kartasi",
+      "Kafolat": "2 yil xalqaro rasmiy kafolat",
+      "Valyuta narxi": "$900"
+    },
+    mechanism: "Avtomatik mexanik (Powermatic 80)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:45:00.000Z",
+    updated_at: "2025-01-26T10:45:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
