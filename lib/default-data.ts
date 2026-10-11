@@ -240,9 +240,9 @@ export const DEFAULT_PRODUCTS: Product[] = [
     name: "Orient Bambino Multi-Function Grey Dial Automatic",
     slug: "orient-bambino-multi-function-grey-dial",
     description: "Orient Bambino Multi-Function — o'zgacha kulrang (antratsit) siferblatli va zaytun rangli charm tasmali yapon soati. Hafta kuni sub-diali, 24 soatlik vaqt indikatori, Rim raqamlari va soat 3 da sana darchasi. Yaponiyaning afsonaviy Orient avtomatik mexanizmi va gumbazsimon mineral shisha. 2 yil rasmiy kafolat bilan.",
-    price: 3420000,
-    old_price: 3900000,
-    discount: 12,
+    price: 3300000,
+    old_price: 3800000,
+    discount: 13,
     category_id: "cat-mexanik-soatlar",
     brand: "Orient",
     stock: 5,
@@ -252,7 +252,8 @@ export const DEFAULT_PRODUCTS: Product[] = [
     image: "/products/orient_bambino_grey_dial.png",
     images: [
       { id: "img-bambino-gry-1", url: "/products/orient_bambino_grey_dial.png", sort_order: 1 },
-      { id: "img-bambino-gry-2", url: "/products/orient_bambino_grey_dial.png", sort_order: 2 }
+      { id: "img-bambino-gry-2", url: "/products/orient_bambino_grey_dial_hand.jpg", sort_order: 2 },
+      { id: "img-bambino-gry-3", url: "/products/orient_bambino_grey_dial_hand.jpg", sort_order: 3 }
     ],
     specifications: {
       "Korpus o'lchami": "40.5 mm",
