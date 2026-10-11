@@ -869,6 +869,46 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:40:00.000Z",
     updated_at: "2025-01-26T11:40:00.000Z",
   },
+  {
+    id: "p-tsar-bomba-tb8605-dark-matter",
+    name: "Tsar Bomba TB8605 Carbon Fiber 'Dark Matter' Automatic",
+    slug: "tsar-bomba-tb8605-carbon-fiber-dark-matter-automatic",
+    description: "Original Tsar Bomba TB8605-04 'Dark Matter' — eng yuqori toifadagi presslangan uglerod tolasi (Forged Carbon Fiber) korpusga ega bo'lgan premium skelet avtomatik soat. Richard Mille uslubidagi ergonomik tonneau (bochkasimon) dizayn, ochiq oltin tishli mexanik uzatmalar, qirilmaydigan antirefleksli sapfir kristall oyna (Sapphire Crystal) va yuqori sifatli qora FKM ftor-kauchuk tasma. 50 metr (5 ATM) suvga chidamlilik. To'plamda: original kumushrang Tsar Bomba sovg'a qutisi, firma paketi, xalqaro kafolat pasporti va Timeless rasmiy kafolat kartasi bilan. Narxi: $650.",
+    price: 8320000,
+    old_price: 9500000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Tsar Bomba",
+    stock: 3,
+    sku: "TSAR-BOMBA-TB8605-04-DARK",
+    rating: 5.0,
+    reviews_count: 15,
+    image: "/products/tsar_bomba_tb8605_dark_matter.jpg",
+    images: [
+      { id: "img-tb8605-1", url: "/products/tsar_bomba_tb8605_dark_matter.jpg", sort_order: 1 },
+      { id: "img-tb8605-2", url: "/products/tsar_bomba_tb8605_dark_matter.jpg", sort_order: 2 },
+      { id: "img-tb8605-3", url: "/products/tsar_bomba_tb8605_dark_matter.jpg", sort_order: 3 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi brend": "Tsar Bomba (Original)",
+      "Model": "Tsar Bomba TB8605-04 Dark Matter Series",
+      "Korpus shakli va o'lchami": "Ergonomik Tonneau 43.5 x 50.5 mm (Qalinligi: 15.5 mm)",
+      "Korpus materiali": "Forged Carbon Fiber (Haqiqiy presslangan uglerod tolasi)",
+      "Mexanizm": "Yapon avtomatik mexanizmi (Open Skeleton, Avtopodzavod)",
+      "Shisha turi": "Qavariq sapfir kristall (Sapphire Crystal — tirnalmaydi, antirefleks)",
+      "Tasma": "Premium toifadagi gipoallergen qora FKM ftor-kauchuk tasma",
+      "Xususiyat": "Ochiq skelet mexanika, oltin rangli detallar, engil uglerod korpus",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original kumushrang Tsar Bomba qutisi, firma paketi, kafolat pasporti, Timeless kartasi",
+      "Kafolat": "2 yil rasmiy kafolat",
+      "Valyuta narxi": "$650"
+    },
+    mechanism: "Avtomatik mexanik (Skeleton)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:45:00.000Z",
+    updated_at: "2025-01-26T11:45:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
