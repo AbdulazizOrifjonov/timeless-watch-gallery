@@ -159,7 +159,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // 1. Agar Super Admin raqami bo'lsa
       if (isSuper) {
-        const expectedPassword = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123").toLowerCase();
+        const expectedPassword = (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "Isroiljon_admin").toLowerCase();
         if (!password || password.trim().toLowerCase() !== expectedPassword) {
           return { ok: false, error: "Admin paroli noto'g'ri!", isAdmin: true };
         }
@@ -208,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               full_name: adminName,
               phone: cleanPhone,
               role: "super_admin",
-              password: password || "admin123",
+              password: password || "Isroiljon_admin",
             })
             .select()
             .single();
