@@ -111,6 +111,27 @@ export const ProductCard = React.memo(function ProductCard({
         variant === "full" ? "flex flex-row gap-3 sm:gap-4 p-2 sm:p-3" : "flex h-full flex-col"
       )}
     >
+      {/* Sevimlilar (Wishlist) tugmasi - kartochkaning o'ng yuqori burchagida */}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggle(product.id);
+        }}
+        aria-label="Sevimlilarga qo'shish"
+        className={cn(
+          "absolute z-30 flex items-center justify-center rounded-full transition-all duration-200 shadow-sm hover:scale-110 active:scale-95 touch-target",
+          variant === "full"
+            ? "right-3 top-3 sm:right-4 sm:top-4 h-8 w-8 sm:h-9 sm:w-9 bg-navy-50/90 hover:bg-white border border-navy-100"
+            : "right-1.5 top-1.5 sm:right-2 sm:top-2 h-7 w-7 sm:h-9 sm:w-9 bg-white/90 hover:bg-white border border-navy-100/50"
+        )}
+      >
+        <Heart
+          size={variant === "full" ? 17 : 15}
+          className={wished ? "fill-danger text-danger" : "text-navy-900"}
+        />
+      </button>
+
       <div
         className={cn(
           "relative overflow-hidden rounded-lg sm:rounded-xl bg-navy-50/70 shrink-0",
@@ -132,17 +153,6 @@ export const ProductCard = React.memo(function ProductCard({
         <span className="absolute left-1.5 bottom-1.5 sm:left-2 sm:bottom-2 z-20 rounded bg-white/90 backdrop-blur-sm border border-[#C5A059]/30 px-1.5 py-0.5 text-[8px] sm:text-[9px] font-bold tracking-wider text-[#5E3023] uppercase shadow-sm pointer-events-none">
           {product.mechanism || "Original"}
         </span>
-
-        <button
-          onClick={() => toggle(product.id)}
-          aria-label="Sevimlilarga qo'shish"
-          className="absolute right-1.5 top-1.5 sm:right-2 sm:top-2 z-20 flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white/90 shadow-sm transition hover:bg-white touch-target hover:scale-105"
-        >
-          <Heart
-            size={15}
-            className={wished ? "fill-danger text-danger" : "text-navy-900"}
-          />
-        </button>
 
         <Link 
           href={`/products/${product.slug}`} 
@@ -210,7 +220,7 @@ export const ProductCard = React.memo(function ProductCard({
         )}
       </div>
 
-      <div className="flex flex-1 flex-col">
+      <div className={cn("flex flex-1 flex-col", variant === "full" && "pr-8 sm:pr-12")}>
         {product.brand && (
           <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-navy-900/55 mb-0.5 block font-mono leading-none">
             {product.brand}
