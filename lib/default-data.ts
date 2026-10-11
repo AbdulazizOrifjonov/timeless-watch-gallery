@@ -598,6 +598,43 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:10:00.000Z",
     updated_at: "2025-01-26T11:10:00.000Z",
   },
+  {
+    id: "p-tissot-prx-powermatic-80-ice-blue",
+    name: "Tissot PRX Powermatic 80 Ice Blue 40mm 🇨🇭",
+    slug: "tissot-prx-powermatic-80-ice-blue-40mm",
+    description: "Dunyo bo'ylab eng mashhur va eng talabgir Shveytsariya soati — Tissot PRX Powermatic 80 Ice Blue (Muzdek moviy vafli naqshli siferblat). 1978-yilgi afsonaviy retro dizayn, integratsiyalashgan qirrali zanglamas po'lat braslet va korpus. 80 soat quvvat zaxirasiga ega Shveytsariya avtomatik mexanizmi (Powermatic 80) va antimagnit Nivachron prujinasi. Tirnalishga chidamli sapfir kristall shisha (Sapphire Crystal), 100 metr (10 ATM) suvga chidamlilik, shaffof orqa qopqoq va sana darchasi. To'plamda: original hashamatli Tissot qutisi, hujjatlar va 2 yil xalqaro rasmiy kafolat bilan. Narxi: $650.",
+    price: 8320000,
+    old_price: 9500000,
+    discount: 12,
+    category_id: "cat-shveytsariya-soatlari",
+    brand: "Tissot",
+    stock: 5,
+    sku: "TIS-PRX-PM80-ICEBLU",
+    rating: 5.0,
+    reviews_count: 24,
+    image: "/products/tissot_prx_powermatic_80_ice_blue.png",
+    images: [
+      { id: "img-tissot-prx-1", url: "/products/tissot_prx_powermatic_80_ice_blue.png", sort_order: 1 },
+      { id: "img-tissot-prx-2", url: "/products/tissot_prx_powermatic_80_ice_blue.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi davlat": "Shveytsariya (Swiss Made 🇨🇭)",
+      "Korpus o'lchami": "40 mm",
+      "Korpus va braslet": "316L zanglamas po'lat (Integratsiyalashgan PRX braslet)",
+      "Mexanizm": "Swiss Powermatic 80.111 Avtomatik (80 soat quvvat zaxirasi)",
+      "Xususiyat": "Muzdek moviy vafli (Waffle) siferblat, Nivachron antimagnit prujina",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Suvga chidamlilik": "10 ATM / 100 metr (Suzishga yaroqli)",
+      "Komplektatsiya": "Original hashamatli Tissot qutisi, hujjatlar, xalqaro kafolat taloni",
+      "Kafolat": "2 yil xalqaro rasmiy kafolat",
+      "Valyuta narxi": "$650"
+    },
+    mechanism: "Avtomatik mexanik (Powermatic 80)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:15:00.000Z",
+    updated_at: "2025-01-26T11:15:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
