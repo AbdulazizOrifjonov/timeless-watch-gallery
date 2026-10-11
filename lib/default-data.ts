@@ -199,7 +199,41 @@ export const DEFAULT_PRODUCTS: Product[] = [
     is_active: true,
     is_new: true,
     created_at: "2025-01-26T10:15:00.000Z",
-    updated_at: "2025-01-26T10:15:00.000Z",
+  },
+  {
+    id: "p-orient-bambino-38mm-small-seconds-black",
+    name: "Orient Bambino 38mm Small Seconds Black Dial Automatic",
+    slug: "orient-bambino-38mm-small-seconds-black-dial",
+    description: "Orient Bambino 38mm Black Dial — hashamatli qora siferblatli ixcham vintage uslubdagi yapon soati. 38mm ixcham korpus, soat 6 da nur taratuvchi alohida soniya sub-diali (Small Seconds), oq Rim raqamlari, soat 3 da sana darchasi va qora tabiiy charm tasma. 2 yil rasmiy kafolat bilan.",
+    price: 3485000,
+    old_price: 3950000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Orient",
+    stock: 5,
+    sku: "ORT-BAMBINO-38-BLK",
+    rating: 5.0,
+    reviews_count: 5,
+    image: "/products/orient_bambino_38mm_small_seconds_black.png",
+    images: [
+      { id: "img-bambino-38-blk-1", url: "/products/orient_bambino_38mm_small_seconds_black.png", sort_order: 1 },
+      { id: "img-bambino-38-blk-2", url: "/products/orient_bambino_38mm_small_seconds_black.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "38 mm (Ixcham klassik o'lcham)",
+      "Korpus materiali": "Zanglamas po'lat 316L",
+      "Mexanizm": "Orient Cal. F6222 Avtomatik (Yaponiya)",
+      "Shisha turi": "Gumbazsimon mineral kristall",
+      "Tasma": "Tabiiy qora charm (Alligator naqshli)",
+      "Funksiyalar": "Small Seconds (Alohida soniya), Sana",
+      "Suvga chidamlilik": "30 metr / 3 BAR",
+      "Kafolat": "2 yil rasmiy kafolat"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:20:00.000Z",
+    updated_at: "2025-01-26T10:20:00.000Z",
   },
 ];
 
