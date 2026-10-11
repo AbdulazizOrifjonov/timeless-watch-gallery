@@ -23,12 +23,12 @@ export function getUzPhoneDigits(raw: string): string {
 }
 
 // Ruxsat berilgan Super Admin raqamlari (.env orqali boshqariladi)
-const envAdminNumbers = (process.env.NEXT_PUBLIC_ADMIN_PHONES || "901234567")
+const envAdminNumbers = (process.env.NEXT_PUBLIC_ADMIN_PHONES || "975555517")
   .split(",")
   .map((p) => getUzPhoneDigits(p.trim()))
   .filter(Boolean);
 
-export const ADMIN_NUMBERS = envAdminNumbers.length > 0 ? envAdminNumbers : ["901234567"];
+export const ADMIN_NUMBERS = envAdminNumbers.length > 0 ? envAdminNumbers : ["975555517"];
 
 export const ADMIN_PHONES = ADMIN_NUMBERS.map((n) => `+998${n}`);
 

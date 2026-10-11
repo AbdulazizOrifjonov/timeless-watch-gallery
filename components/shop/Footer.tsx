@@ -3,7 +3,7 @@ import { MapPin, Mail, Phone, Send } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/InstagramIcon";
 import { Logo } from "./Logo";
 
-const CONTACT_PHONE = process.env.NEXT_PUBLIC_CONTACT_PHONE || "+998 90 000 00 00";
+const CONTACT_PHONE = process.env.NEXT_PUBLIC_CONTACT_PHONE || "+998 97 555 55 17";
 const CONTACT_TEL = `tel:${CONTACT_PHONE.replace(/[^\d+]/g, "")}`;
 const TELEGRAM_CHANNEL_URL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || "https://t.me/timless_watchgallery";
 const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_URL || "https://www.instagram.com/timeless_watchgallery?stkn=ZTA3OHh0cnR2bzUx&utm_source=qr";

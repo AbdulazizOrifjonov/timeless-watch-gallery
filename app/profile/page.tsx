@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,7 +14,7 @@ import { useStore, fileToDataUrl } from "@/lib/store";
 import { formatSom, cn } from "@/lib/utils";
 import { useToast } from "@/context/ToastContext";
 
-const CONTACT_PHONE = process.env.NEXT_PUBLIC_CONTACT_PHONE || "+998 90 000 00 00";
+const CONTACT_PHONE = process.env.NEXT_PUBLIC_CONTACT_PHONE || "+998 97 555 55 17";
 const CONTACT_TEL = `tel:${CONTACT_PHONE.replace(/[^\d+]/g, "")}`;
 
 export default function ProfilePage() {
