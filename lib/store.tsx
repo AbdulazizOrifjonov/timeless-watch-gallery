@@ -84,7 +84,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         const dummyBrands = ["DeWalt", "Bosch", "Makita", "Crown", "Resanta", "Edon", "Hilda"];
         
         const validSupabaseProducts = p ? p.filter((prod: Product) => !dummyBrands.includes(prod.brand || "")) : [];
-        const mergedProducts = [...DEFAULT_PRODUCTS];
+        let deletedLocalIds: string[] = [];
+        try {
+          if (typeof window !== "undefined") {
+            deletedLocalIds = JSON.parse(localStorage.getItem("tml_deleted_products") || "[]");
+          }
+        } catch {}
+        const mergedProducts = [...DEFAULT_PRODUCTS.filter(x => !deletedLocalIds.includes(x.id))];
         for (const sp of validSupabaseProducts) {
           const idx = mergedProducts.findIndex((x) => x.id === sp.id);
           if (idx >= 0) mergedProducts[idx] = sp; // update with DB version
@@ -327,6 +333,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const updateProduct = useCallback((id: string, p: Partial<Product>) => {
     setProducts((prev) => prev.map((item) => (item.id === id ? { ...item, ...p } : item)));
+    try {
+      const updatedLocalMap: Record<string, any> = JSON.parse(localStorage.getItem("tml_updated_products") || "{}");
+      updatedLocalMap[id] = { ...(updatedLocalMap[id] || {}), ...p };
+      localStorage.setItem("tml_updated_products", JSON.stringify(updatedLocalMap));
+    } catch {}
     
     // Remove invalid columns for Supabase
     const { colors, mechanism, updated_at, ...validPayload } = p as any;
@@ -338,6 +349,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const deleteProduct = useCallback((id: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
+    try {
+      const deletedLocalIds: string[] = JSON.parse(localStorage.getItem("tml_deleted_products") || "[]");
+      if (!deletedLocalIds.includes(id)) {
+        deletedLocalIds.push(id);
+        localStorage.setItem("tml_deleted_products", JSON.stringify(deletedLocalIds));
+      }
+    } catch {}
     supabase.from('products').delete().eq('id', id).then(({ error }) => {
       if (error) console.error("Error deleting product:", error);
     });
