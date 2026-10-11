@@ -522,6 +522,44 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:00:00.000Z",
     updated_at: "2025-01-26T11:00:00.000Z",
   },
+  {
+    id: "p-tissot-ballade-fluted-bezel-bicolor",
+    name: "Tissot Ballade Fluted Bezel Bi-Color Sapphire 40mm 🇨🇭",
+    slug: "tissot-ballade-fluted-bezel-bicolor-sapphire-40mm",
+    description: "Original Shveytsariya brendi Tissot'dan hashamatli Ballade modeli. Elegant qirrali oltin lyunet (Fluted Bezel), quyosh nurlari taratuvchi guilloché siferblat va 5 qatorli Jubilee uslubidagi bi-color (po'lat & oltin PVD) braslet. Qirilmaydigan sapfir kristall shisha (Sapphire Crystal), soat 3 da sana darchasi. 40 mm klassik korpus. Komplektda: original Tissot qutisi, hujjatlar va 2 yil xalqaro rasmiy kafolat bilan. Narxi: $350.",
+    price: 4480000,
+    old_price: 5100000,
+    discount: 12,
+    category_id: "cat-shveytsariya-soatlari",
+    brand: "Tissot",
+    stock: 5,
+    sku: "TIS-BALLADE-FLUTED-40",
+    rating: 5.0,
+    reviews_count: 15,
+    image: "/products/tissot_ballade_fluted_bezel_bicolor.jpg",
+    images: [
+      { id: "img-tissot-bal-1", url: "/products/tissot_ballade_fluted_bezel_bicolor.jpg", sort_order: 1 },
+      { id: "img-tissot-bal-2", url: "/products/tissot_ballade_fluted_bezel_bicolor.jpg", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi davlat": "Shveytsariya (Swiss Made 🇨🇭)",
+      "Korpus o'lchami": "40 mm",
+      "Bezel (Lyunet)": "Qirrali oltin lyunet (Fluted Bezel — nufuzli dizayn)",
+      "Korpus va braslet": "316L zanglamas po'lat va sariq oltin PVD (Jubilee bi-color)",
+      "Mexanizm": "Swiss Made ETA Yuqori aniqlikdagi mexanizm",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Funksiyalar": "Guilloché quyosh siferblati, Sana darchasi",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original hashamatli Tissot qutisi, hujjatlar, xalqaro kafolat taloni",
+      "Kafolat": "2 yil xalqaro rasmiy kafolat",
+      "Valyuta narxi": "$350"
+    },
+    mechanism: "Swiss Kvars (Yuqori aniqlik)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:05:00.000Z",
+    updated_at: "2025-01-26T11:05:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
