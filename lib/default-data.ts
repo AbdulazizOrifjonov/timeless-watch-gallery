@@ -98,6 +98,41 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:00:00.000Z",
     updated_at: "2025-01-26T10:00:00.000Z",
   },
+  {
+    id: "p-orient-bambino-black-dial",
+    name: "Orient Bambino Classic Black Dial Automatic",
+    slug: "orient-bambino-classic-black-dial",
+    description: "Orient Bambino Classic — afsonaviy yapon minimalist klassikasi. Qora siferblat, xrom qoplamali uchburchak indekslar, soat 3 da sana darchasi, gumbazsimon kristall shisha va qora tabiiy charm tasma. 2 yil rasmiy kafolat bilan.",
+    price: 3175000,
+    old_price: 3600000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Orient",
+    stock: 5,
+    sku: "ORT-BAMBINO-BLK",
+    rating: 5.0,
+    reviews_count: 5,
+    image: "/products/orient_bambino_black_dial.png",
+    images: [
+      { id: "img-orient-blk-1", url: "/products/orient_bambino_black_dial.png", sort_order: 1 },
+      { id: "img-orient-blk-2", url: "/products/orient_bambino_black_dial.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "40.5 mm",
+      "Korpus materiali": "Zanglamas po'lat 316L",
+      "Mexanizm": "Orient Cal. F6724 Avtomatik (Yaponiya)",
+      "Shisha turi": "Gumbazsimon mineral kristall",
+      "Tasma": "Tabiiy qora charm",
+      "Funksiyalar": "Sana ko'rsatkichi",
+      "Suvga chidamlilik": "30 metr / 3 BAR",
+      "Kafolat": "2 yil rasmiy kafolat"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:05:00.000Z",
+    updated_at: "2025-01-26T10:05:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
