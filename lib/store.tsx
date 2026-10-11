@@ -138,7 +138,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
               setPromocodes(DEFAULT_PROMOCODES);
             }
           }
-          const validSliders = s.filter((item) => !item.id.startsWith("system_") && item.image_url?.startsWith("http"));
+          const validSliders = s.filter((item) => !item.id.startsWith("system_") && !item.image_url?.includes("unsplash.com") && !item.image_url?.includes("1522335789203"));
           if (validSliders.length >= 5) {
             setSliders(validSliders);
           } else {

@@ -15,9 +15,10 @@ export function HeroSlider({ sliders }: { sliders: Slider[] }) {
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const active = useMemo(() => {
-    const isInternetSliders = sliders?.length >= 5 && sliders.every((s) => s.image_url?.startsWith("http"));
-    const list = isInternetSliders ? sliders : DEFAULT_SLIDES;
-    return list
+    const list = sliders && sliders.length > 0 ? sliders : DEFAULT_SLIDES;
+    const hasUnsplash = list.some((s) => s.image_url?.includes("unsplash.com") || !s.image_url);
+    const finalList = hasUnsplash ? DEFAULT_SLIDES : list;
+    return finalList
       .filter((s) => s.is_active)
       .sort((a, b) => a.sort_order - b.sort_order);
   }, [sliders]);
