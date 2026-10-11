@@ -413,6 +413,42 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:45:00.000Z",
     updated_at: "2025-01-26T10:45:00.000Z",
   },
+  {
+    id: "p-orient-sun-moon-contemporary-sapphire",
+    name: "Orient Sun & Moon Contemporary Sapphire Automatic",
+    slug: "orient-sun-moon-contemporary-sapphire-automatic",
+    description: "Original Orient Sun & Moon Contemporary — yapon sifatining oliy namunasi. Qirilishga qarshi sapfir kristall shisha (Sapphire Crystal), to'liq zanglamas po'lat korpus va braslet. Soat 5 da quyosh va oy fazalari indikatori (Sun & Moon), soat 10 da hafta kuni sub-diali, soat 3 da sana va qizil soniya strelkasi. Orient avtomatik mexanizmi. Komplektda: original quti, hujjatlar va kafolat taloni. Narxi: $400.",
+    price: 5120000,
+    old_price: 5800000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Orient",
+    stock: 4,
+    sku: "ORT-SUN-MOON-CONT-SAP",
+    rating: 5.0,
+    reviews_count: 11,
+    image: "/products/orient_sun_moon_contemporary_sapphire.png",
+    images: [
+      { id: "img-orient-smc-1", url: "/products/orient_sun_moon_contemporary_sapphire.png", sort_order: 1 },
+      { id: "img-orient-smc-2", url: "/products/orient_sun_moon_contemporary_sapphire.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "40 mm",
+      "Korpus va braslet": "Zanglamas po'lat 316L (Solid Stainless Steel)",
+      "Mexanizm": "Orient Cal. F6B24 Avtomatik (Yaponiya)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Funksiyalar": "Sun & Moon (Kun/Tun animatsiyasi), Hafta kuni, Sana",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original Orient qutisi, hujjatlar, xalqaro kafolat kartasi",
+      "Kafolat": "Mexanizmiga 1 yil rasmiy kafolat",
+      "Valyuta narxi": "$400"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:50:00.000Z",
+    updated_at: "2025-01-26T10:50:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
