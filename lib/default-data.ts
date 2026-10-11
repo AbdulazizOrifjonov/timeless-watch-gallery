@@ -485,6 +485,43 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:55:00.000Z",
     updated_at: "2025-01-26T10:55:00.000Z",
   },
+  {
+    id: "p-tissot-bellissima-swiss-ladies",
+    name: "Tissot Bellissima Small Lady Sapphire 26mm 🇨🇭",
+    slug: "tissot-bellissima-small-lady-sapphire-26mm",
+    description: "Original Shveytsariya brendi Tissot'dan nafis ayollar to'plami — Tissot Bellissima Small Lady. 26 mm ixcham nozik korpus, Rim raqamli klassik guilloché siferblat, siferblat markazida sanasi va tojida ko'k kaboshon toshi. Qirilmaydigan sapfir kristall shisha (Sapphire Crystal), 316L zanglamas po'lat va pushti tilla bi-color variantlari. 50 metr (5 ATM) suvga chidamlilik. To'plamda: original Tissot qutisi, hujjatlar va xalqaro kafolat kartasi. Narxi: $350 - $390.",
+    price: 4480000,
+    old_price: 5100000,
+    discount: 12,
+    category_id: "cat-ayollar-soatlari",
+    brand: "Tissot",
+    stock: 6,
+    sku: "TIS-BELLISSIMA-26-LADY",
+    rating: 5.0,
+    reviews_count: 14,
+    image: "/products/tissot_bellissima_swiss_ladies.png",
+    images: [
+      { id: "img-tissot-bel-1", url: "/products/tissot_bellissima_swiss_ladies.png", sort_order: 1 },
+      { id: "img-tissot-bel-2", url: "/products/tissot_bellissima_swiss_ladies.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi davlat": "Shveytsariya (Swiss Made 🇨🇭)",
+      "Korpus o'lchami": "26 mm (Nafis ayollar o'lchami)",
+      "Korpus va braslet": "316L zanglamas po'lat (Steel & Bi-color Rose Gold)",
+      "Mexanizm": "Swiss Made ETA Yuqori aniqlikdagi mexanizm (Yaponiya/Shveytsariya)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Funksiyalar": "Rim raqamlari, Sana darchasi, Ko'k kaboshon toshli toj",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original hashamatli Tissot qutisi, hujjatlar, xalqaro kafolat taloni",
+      "Kafolat": "2 yil xalqaro rasmiy kafolat",
+      "Valyuta narxi": "$350 - $390"
+    },
+    mechanism: "Swiss Kvars (Yuqori aniqlik)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:00:00.000Z",
+    updated_at: "2025-01-26T11:00:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
