@@ -270,6 +270,41 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:25:00.000Z",
     updated_at: "2025-01-26T10:25:00.000Z",
   },
+  {
+    id: "p-casio-edifice-automatic-39mm",
+    name: "Casio Edifice Automatic Sapphire 39mm",
+    slug: "casio-edifice-automatic-sapphire-39mm",
+    description: "Original Casio Edifice — Yaponiyaning afsonaviy brendidan o'zi buraluvchi avtomatik mexanik soat. Qirilishga o'ta chidamli sapfir kristall shisha (Sapphire Crystal), 10 ATM (100 metr) suvga chidamlilik va ixcham 39 mm po'lat korpus. Yashil va to'q ko'k siferblat uyg'unligi, sana darchasi. To'plamda: original quti, hujjatlar va kafolat taloni. Narxi: $350.",
+    price: 4480000,
+    old_price: 5100000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Casio",
+    stock: 4,
+    sku: "CAS-EDIFICE-AUTO-39",
+    rating: 5.0,
+    reviews_count: 7,
+    image: "/products/casio_edifice_automatic_39mm.png",
+    images: [
+      { id: "img-edifice-auto-1", url: "/products/casio_edifice_automatic_39mm.png", sort_order: 1 },
+      { id: "img-edifice-auto-2", url: "/products/casio_edifice_automatic_39mm.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "39 mm",
+      "Korpus va tasma": "Zanglamas po'lat 316L (Solid Stainless Steel)",
+      "Mexanizm": "Yapon avtomatik mexanik (Self-winding)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Suvga chidamlilik": "10 ATM / 100 metr",
+      "Komplektatsiya": "Original quti, hujjatlar, xalqaro kafolat kartasi",
+      "Kafolat": "Mexanizmiga 1 yil rasmiy kafolat",
+      "Valyuta narxi": "$350"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:30:00.000Z",
+    updated_at: "2025-01-26T10:30:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
