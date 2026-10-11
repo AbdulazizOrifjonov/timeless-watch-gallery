@@ -416,9 +416,9 @@ export const DEFAULT_PRODUCTS: Product[] = [
   },
   {
     id: "p-orient-sun-moon-contemporary-sapphire",
-    name: "Orient Sun & Moon Contemporary Sapphire Automatic",
+    name: "Orient Sun & Moon Contemporary Limited Edition Sapphire Automatic",
     slug: "orient-sun-moon-contemporary-sapphire-automatic",
-    description: "Original Orient Sun & Moon Contemporary — yapon sifatining oliy namunasi. Qirilishga qarshi sapfir kristall shisha (Sapphire Crystal), to'liq zanglamas po'lat korpus va braslet. Soat 5 da quyosh va oy fazalari indikatori (Sun & Moon), soat 10 da hafta kuni sub-diali, soat 3 da sana va qizil soniya strelkasi. Orient avtomatik mexanizmi. Komplektda: original quti, hujjatlar va kafolat taloni. Narxi: $400.",
+    description: "Original Orient Sun & Moon Contemporary Limited Edition — yapon nozik soatsozlik san'atining oliy namunasi. Qirilishga qarshi sapfir kristall shisha (Sapphire Crystal), to'liq zanglamas 316L po'lat korpus va braslet. Soat 5 da quyosh va oy fazalari indikatori (Sun & Moon), soat 10 da hafta kuni retrograd sub-diali, soat 3 da sana darchasi va jozibali qizil soniya strelkasi. Orient avtomatik mexanizmi. Komplektda: original quti, Timeless rasmiy kafolat kartasi va hujjatlar bilan. Narxi: $400.",
     price: 5120000,
     old_price: 5800000,
     discount: 12,
@@ -431,17 +431,18 @@ export const DEFAULT_PRODUCTS: Product[] = [
     image: "/products/orient_sun_moon_contemporary_sapphire.png",
     images: [
       { id: "img-orient-smc-1", url: "/products/orient_sun_moon_contemporary_sapphire.png", sort_order: 1 },
-      { id: "img-orient-smc-2", url: "/products/orient_sun_moon_contemporary_sapphire.png", sort_order: 2 }
+      { id: "img-orient-smc-2", url: "/products/orient_sun_moon_contemporary_store_hand.jpg", sort_order: 2 },
+      { id: "img-orient-smc-3", url: "/products/orient_sun_moon_contemporary_store_hand.jpg", sort_order: 3 }
     ],
     specifications: {
       "Korpus o'lchami": "40 mm",
       "Korpus va braslet": "Zanglamas po'lat 316L (Solid Stainless Steel)",
       "Mexanizm": "Orient Cal. F6B24 Avtomatik (Yaponiya)",
       "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
-      "Funksiyalar": "Sun & Moon (Kun/Tun animatsiyasi), Hafta kuni, Sana",
+      "Funksiyalar": "Sun & Moon (Kun/Tun animatsiyasi), Retrograd hafta kuni, Sana",
       "Suvga chidamlilik": "50 metr / 5 BAR",
-      "Komplektatsiya": "Original Orient qutisi, hujjatlar, xalqaro kafolat kartasi",
-      "Kafolat": "Mexanizmiga 1 yil rasmiy kafolat",
+      "Komplektatsiya": "Original Orient qutisi, Timeless firma paketi, kafolat kartasi va hujjatlar",
+      "Kafolat": "2 yil rasmiy kafolat (Timeless)",
       "Valyuta narxi": "$400"
     },
     mechanism: "Avtomatik mexanik",
