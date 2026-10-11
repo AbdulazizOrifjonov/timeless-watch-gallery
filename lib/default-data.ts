@@ -749,6 +749,45 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:30:00.000Z",
     updated_at: "2025-01-26T11:30:00.000Z",
   },
+  {
+    id: "p-tsar-bomba-tb8228-carbon-skeleton",
+    name: "Tsar Bomba TB8228 Carbon Fiber Skeleton Automatic",
+    slug: "tsar-bomba-tb8228-carbon-fiber-skeleton-automatic",
+    description: "Original Tsar Bomba TB8228 — Richard Mille uslubidagi hashamatli Tonneau shaklidagi karbon korpusli skelet soat. Haqiqiy presslangan uglerod tolasi (Carbon Fiber / Damascus Carbon) korpus, ochiq mexanizm yurishi (Full Skeleton Automatic) va 21 toshli yapon avtomatik mexanizmi. Tirnalishga chidamli gumbazsimon sapfir kristall shisha (Sapphire Crystal), ergonomik ftor-kauchuk (FKM) tasma va 50 metr (5 ATM) suvga chidamlilik. To'plamda: original hashamatli Tsar Bomba qutisi, hujjatlar va 2 yil rasmiy kafolat bilan. Narxi: $400.",
+    price: 5120000,
+    old_price: 5900000,
+    discount: 13,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Tsar Bomba",
+    stock: 3,
+    sku: "TSAR-BOMBA-TB8228-CRB",
+    rating: 5.0,
+    reviews_count: 15,
+    image: "/products/tsar_bomba_tb8228_carbon_skeleton.jpg",
+    images: [
+      { id: "img-tsarbomba-1", url: "/products/tsar_bomba_tb8228_carbon_skeleton.jpg", sort_order: 1 },
+      { id: "img-tsarbomba-2", url: "/products/tsar_bomba_tb8228_carbon_skeleton.jpg", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi brend": "Tsar Bomba (Original)",
+      "Model": "Tsar Bomba TB8228 Carbon Edition",
+      "Korpus shakli va o'lchami": "Tonneau (Bochkasimon) 43.5 x 50.5 mm",
+      "Korpus materiali": "Carbon Fiber (Haqiqiy presslangan uglerod tolasi)",
+      "Mexanizm": "Yapon 21 Jewels Avtomatik mexanizm (Skeleton)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi, antirefleks)",
+      "Tasma": "Yuqori elastiklikdagi gipoallergen FKM ftor-kauchuk",
+      "Xususiyat": "To'liq ochiq skelet siferblat, titan vintlar, lyuminestsent strelkalar",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original hashamatli Tsar Bomba qutisi, hujjatlar, xalqaro kafolat taloni",
+      "Kafolat": "2 yil rasmiy kafolat",
+      "Valyuta narxi": "$400"
+    },
+    mechanism: "Avtomatik mexanik (Skeleton)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:35:00.000Z",
+    updated_at: "2025-01-26T11:35:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
