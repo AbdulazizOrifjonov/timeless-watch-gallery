@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { LayoutGrid, List, X, Menu, Filter } from "lucide-react";
 import { ProductCard } from "./ProductCard";
+import { ProductCardSkeleton } from "./ProductCardSkeleton";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { Product } from "@/types/database";
@@ -20,7 +21,7 @@ export function CatalogView({
   saleOnly?: boolean;
   title?: string;
 }) {
-  const { products, categories } = useStore();
+  const { products, categories, ready } = useStore();
   const [categorySlug, setCategorySlug] = useState(initialCategorySlug ?? "all");
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sort, setSort] = useState("popular");
@@ -272,7 +273,19 @@ export function CatalogView({
           </div>
         </div>
 
-        {pageItems.length === 0 ? (
+        {!ready ? (
+          <div
+            className={
+              view === "grid"
+                ? "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 gap-responsive"
+                : "flex flex-col gap-4"
+            }
+          >
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ProductCardSkeleton key={i} variant={view === "list" ? "full" : "compact"} />
+            ))}
+          </div>
+        ) : pageItems.length === 0 ? (
           <div className="rounded-xl border border-dashed border-navy-100 py-20 text-center text-navy-900/50">
             Hech qanday mahsulot topilmadi.
           </div>

@@ -500,3 +500,9 @@ nextjs-portal,
   pointer-events: none !important;
   opacity: 0 !important;
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
