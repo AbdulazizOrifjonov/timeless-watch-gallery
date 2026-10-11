@@ -710,6 +710,44 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:25:00.000Z",
     updated_at: "2025-01-26T11:25:00.000Z",
   },
+  {
+    id: "p-orient-sport-classic-day-date-black",
+    name: "Orient Sport Classic Day-Date Black Dial (FUG1X004B)",
+    slug: "orient-sport-classic-day-date-black-dial",
+    description: "Original Yaponiya brendi Orient'dan zamonaviy Sport Classic Day-Date modeli (FUG1X004B). Hashamatli qora siferblat, qulay o'qiluvchi 12 va 6 arab raqamlari, soat 3 da hafta kuni va sana darchasi. Zanglamas po'lat 316L korpus, qorong'uda nur sochuvchi lyuminestsent ko'rsatkichlar va tabiiy qora charm tasma. 50 metr (5 ATM) suvga chidamlilik va yuqori aniqlikdagi yapon kvars mexanizmi. Original qutisi, hujjatlari va 2 yil rasmiy kafolat bilan.",
+    price: 2550000,
+    old_price: 2950000,
+    discount: 14,
+    category_id: "cat-kvars-soatlari",
+    brand: "Orient",
+    stock: 6,
+    sku: "ORT-SPORT-DD-FUG1X",
+    rating: 5.0,
+    reviews_count: 10,
+    image: "/products/orient_sport_classic_day_date_black.jpg",
+    images: [
+      { id: "img-orient-sp-1", url: "/products/orient_sport_classic_day_date_black.jpg", sort_order: 1 },
+      { id: "img-orient-sp-2", url: "/products/orient_sport_classic_day_date_black.jpg", sort_order: 2 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi": "Yaponiya (Original Orient)",
+      "Model kodi": "Orient FUG1X004B Sport Classic",
+      "Korpus o'lchami": "43 mm (Qalinligi: 9 mm)",
+      "Korpus materiali": "Zanglamas po'lat 316L (Solid Stainless Steel)",
+      "Mexanizm": "Yapon Orient Yuqori aniqlikdagi kvars mexanizmi",
+      "Shisha turi": "Mustahkamlangan mineral kristall shisha",
+      "Tasma": "Tabiiy qora charm (Alligator naqshli)",
+      "Funksiyalar": "Hafta kuni (Day) va sana (Date), Lyuminestsent strelkalar",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original Orient qutisi, hujjatlar, kafolat taloni",
+      "Kafolat": "2 yil rasmiy kafolat"
+    },
+    mechanism: "Kvars (Yuqori aniqlik)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:30:00.000Z",
+    updated_at: "2025-01-26T11:30:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
