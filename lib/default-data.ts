@@ -788,6 +788,47 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T11:35:00.000Z",
     updated_at: "2025-01-26T11:35:00.000Z",
   },
+  {
+    id: "p-tsar-bomba-tb8208-automatic",
+    name: "Tsar Bomba TB8208 Luxury Skeleton Automatic",
+    slug: "tsar-bomba-tb8208-luxury-skeleton-automatic",
+    description: "Original Tsar Bomba TB8208 — Richard Mille uslubidagi hashamatli Tonneau shaklidagi ochiq skelet mexanizmli avtomatik soat. 316L zanglamas po'lat, titan va Rose Gold / Black PVD qoplamali qirrali bezel. 21 toshli yapon avtomatik mexanizmi, qirilmaydigan sapfir kristall shisha (Sapphire Crystal) va yuqori sifatli FKM kauchuk tasma. 50 metr (5 ATM) suvga chidamlilik. To'plamda: original hashamatli Tsar Bomba qutisi, hujjatlar va 2 yil rasmiy xalqaro kafolat bilan. Narxi: $400.",
+    price: 5120000,
+    old_price: 5900000,
+    discount: 13,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Tsar Bomba",
+    stock: 6,
+    sku: "TSAR-BOMBA-TB8208-AUTO",
+    rating: 5.0,
+    reviews_count: 18,
+    image: "/products/tsar_bomba_tb8208_gold.png",
+    images: [
+      { id: "img-tb8208-1", url: "/products/tsar_bomba_tb8208_gold.png", sort_order: 1 },
+      { id: "img-tb8208-2", url: "/products/tsar_bomba_tb8208_titanium.png", sort_order: 2 },
+      { id: "img-tb8208-3", url: "/products/tsar_bomba_tb8208_black.png", sort_order: 3 },
+      { id: "img-tb8208-4", url: "/products/tsar_bomba_tb8208_trio_set.jpg", sort_order: 4 }
+    ],
+    specifications: {
+      "Ishlab chiqaruvchi brend": "Tsar Bomba (Original)",
+      "Model": "Tsar Bomba TB8208 Automatic Series",
+      "Korpus shakli va o'lchami": "Tonneau (Bochkasimon) 43.5 x 50.5 mm",
+      "Korpus va bezel": "316L zanglamas po'lat, Titan va Rose Gold PVD finish",
+      "Mexanizm": "Yapon 21 Jewels Avtomatik mexanizm (Full Skeleton)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi, antirefleks)",
+      "Tasma": "Yuqori elastiklikdagi gipoallergen FKM ftor-kauchuk",
+      "Xususiyat": "Rose Gold, Titanium va All-Black rang variantlari, titan vintlar",
+      "Suvga chidamlilik": "50 metr / 5 BAR",
+      "Komplektatsiya": "Original hashamatli Tsar Bomba qutisi, hujjatlar, 2 yillik xalqaro kafolat kartasi",
+      "Kafolat": "2 yil rasmiy kafolat",
+      "Valyuta narxi": "$400"
+    },
+    mechanism: "Avtomatik mexanik (Skeleton)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T11:40:00.000Z",
+    updated_at: "2025-01-26T11:40:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
