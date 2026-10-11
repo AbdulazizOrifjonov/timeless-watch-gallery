@@ -19,7 +19,6 @@ import { useStore } from "@/lib/store";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { calcDiscount, formatSom, getProductPublicUrl, cn } from "@/lib/utils";
-import ProductDetailLoading from "./loading";
 
 const TABS = ["Tavsif", "Xususiyatlar", "Sharhlar", "Yetkazib berish", "Qaytarish"];
 
@@ -83,10 +82,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     [products, product]
   );
 
-  if (!ready || !product) {
-    if (!ready) {
-      return <ProductDetailLoading />;
-    }
+  if (!product) {
     return (
       <div className="min-h-screen bg-white">
         <Header active="/products" />
@@ -159,8 +155,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             {gallery.map((src, i) => (
               <button
                 key={i}
-                onClick={() => { setActiveImage(i); setMainImageLoaded(false); }}
-                className={`relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg border-2 lg:w-full bg-navy-50/80 ${
+                onClick={() => setActiveImage(i)}
+                className={`relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg border-2 lg:w-full ${
                   activeImage === i ? "border-navy-900" : "border-navy-100"
                 }`}
               >
@@ -170,30 +166,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           </div>
 
           <div 
-            className="group relative aspect-square w-full flex-1 overflow-hidden rounded-2xl bg-navy-50/80 border border-navy-100/70"
+            className="group relative aspect-square w-full flex-1 overflow-hidden rounded-2xl bg-navy-50 border border-navy-50"
           >
             <div className="absolute inset-0 cursor-zoom-in" onClick={() => setIsLightboxOpen(true)}>
-              {/* Luxury Image Loading Skeleton */}
-              {!mainImageLoaded && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-gradient-to-br from-navy-100/80 via-navy-50/60 to-navy-100/80 animate-pulse">
-                  <div className="h-20 w-20 rounded-full border-2 border-navy-200/50 flex items-center justify-center opacity-30">
-                    <div className="h-3 w-3 rounded-full bg-navy-300" />
-                  </div>
-                  <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.8s_infinite] bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-                </div>
-              )}
               {gallery[activeImage] && (
-                <Image 
-                  src={gallery[activeImage]} 
-                  alt={product.name} 
-                  fill 
-                  priority 
-                  className={cn(
-                    "object-cover transition-all duration-500",
-                    mainImageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                  )} 
-                  onLoad={() => setMainImageLoaded(true)}
-                />
+                <Image src={gallery[activeImage]} alt={product.name} fill priority className="object-cover" />
               )}
             </div>
             

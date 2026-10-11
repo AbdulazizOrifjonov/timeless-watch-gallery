@@ -7,7 +7,6 @@ import { HeroSlider } from "@/components/shop/HeroSlider";
 import { CategoryCard } from "@/components/shop/CategoryCard";
 import { SectionHeader } from "@/components/shop/SectionHeader";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { ProductCardSkeleton } from "@/components/shop/ProductCardSkeleton";
 import { SaleCountdown } from "@/components/shop/SaleCountdown";
 import { useStore } from "@/lib/store";
 
@@ -23,7 +22,7 @@ import { LuxuryMarquee } from "@/components/shop/LuxuryMarquee";
 import { DEFAULT_CATEGORIES } from "@/lib/default-data";
 
 export default function Home() {
-  const { products, categories, sliders, ready } = useStore();
+  const { products, categories, sliders } = useStore();
   const [page, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
@@ -140,13 +139,7 @@ export default function Home() {
           </div>
         </div>
 
-        {!ready ? (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <ProductCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : visibleFeatured.length > 0 ? (
+        {visibleFeatured.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {visibleFeatured.map((p) => (
               <ProductCard key={p.id} product={p} />

@@ -37,7 +37,6 @@ export const ProductCard = React.memo(function ProductCard({
 
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const hasSwipedRef = useRef(false);
@@ -172,29 +171,15 @@ export const ProductCard = React.memo(function ProductCard({
               {images.map((src, idx) => (
                 <div 
                   key={idx} 
-                  className="relative h-full w-full shrink-0 select-none bg-navy-50/80 overflow-hidden"
+                  className="relative h-full w-full shrink-0 select-none"
                 >
-                  {/* Luxury Skeleton Placeholder while image loads */}
-                  {!loadedImages[idx] && (
-                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-gradient-to-br from-navy-100/80 via-navy-50/60 to-navy-100/80 animate-pulse">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full border-2 border-navy-200/50 flex items-center justify-center opacity-30">
-                        <div className="h-2 w-2 rounded-full bg-navy-300" />
-                      </div>
-                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.8s_infinite] bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-                    </div>
-                  )}
-
                   <Image
                     src={src}
                     alt={`${product.name} - ${idx + 1}`}
                     fill
                     draggable={false}
                     sizes={variant === "full" ? "200px" : "(max-width: 480px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"}
-                    className={cn(
-                      "object-cover group-hover:scale-105 transition-all duration-500 pointer-events-none select-none",
-                      loadedImages[idx] ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                    )}
-                    onLoad={() => setLoadedImages((prev) => ({ ...prev, [idx]: true }))}
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none select-none"
                   />
                 </div>
               ))}
