@@ -91,14 +91,16 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="container-shop py-6">
-        <SectionHeader title="Aksiya mahsulotlari" href="/products?sale=1" extra={<SaleCountdown />} />
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          {saleProducts.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+      {saleProducts.length > 0 && (
+        <div className="container-shop py-6">
+          <SectionHeader title="Aksiya mahsulotlari" href="/products?sale=1" extra={<SaleCountdown />} />
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {saleProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="container-shop py-6 pb-16" id="featured">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
