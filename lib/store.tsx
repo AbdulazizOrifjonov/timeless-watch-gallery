@@ -20,6 +20,21 @@ function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+export const CATEGORY_UUID_MAP: Record<string, string> = {
+  "cat-erkaklar-soatlari": "d6971497-de38-c496-2c13-c80e7c4cba03",
+  "erkaklar-soatlari": "d6971497-de38-c496-2c13-c80e7c4cba03",
+  "cat-ayollar-soatlari": "63e89563-ed97-e3dd-90e2-8fb4d29f36e7",
+  "ayollar-soatlari": "63e89563-ed97-e3dd-90e2-8fb4d29f36e7",
+  "cat-mexanik-soatlar": "118dee4b-db4d-e74d-7eeb-2264e986b373",
+  "mexanik-soatlar": "118dee4b-db4d-e74d-7eeb-2264e986b373",
+  "cat-kvars-soatlari": "84d75ece-80cd-79e1-e6d8-058603151218",
+  "kvars-soatlari": "84d75ece-80cd-79e1-e6d8-058603151218",
+  "cat-shveytsariya-soatlari": "5d0c6b4d-072b-e8cc-e434-809c655695be",
+  "shveytsariya-soatlari": "5d0c6b4d-072b-e8cc-e434-809c655695be",
+  "cat-aksessuarlar": "d56611a2-145f-66a5-9055-35487ba4d3be",
+  "aksessuarlar": "d56611a2-145f-66a5-9055-35487ba4d3be",
+};
+
 interface StoreValue {
   products: Product[];
   categories: Category[];
@@ -85,16 +100,36 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         
         const validSupabaseProducts = p ? p.filter((prod: Product) => !dummyBrands.includes(prod.brand || "")) : [];
         let deletedLocalIds: string[] = [];
+        let customLocalProducts: Product[] = [];
+        let updatedLocalMap: Record<string, any> = {};
         try {
           if (typeof window !== "undefined") {
             deletedLocalIds = JSON.parse(localStorage.getItem("tml_deleted_products") || "[]");
+            customLocalProducts = JSON.parse(localStorage.getItem("tml_custom_products") || "[]");
+            updatedLocalMap = JSON.parse(localStorage.getItem("tml_updated_products") || "{}");
           }
         } catch {}
-        const mergedProducts = [...DEFAULT_PRODUCTS.filter(x => !deletedLocalIds.includes(x.id))];
+
+        let mergedProducts: Product[] = [
+          ...customLocalProducts.filter((x) => !deletedLocalIds.includes(x.id)),
+          ...DEFAULT_PRODUCTS.filter((x) => !deletedLocalIds.includes(x.id))
+        ];
+
+        mergedProducts = mergedProducts.map((item) => {
+          if (updatedLocalMap[item.id]) {
+            return { ...item, ...updatedLocalMap[item.id] };
+          }
+          return item;
+        });
+
         for (const sp of validSupabaseProducts) {
+          if (deletedLocalIds.includes(sp.id)) continue;
           const idx = mergedProducts.findIndex((x) => x.id === sp.id);
-          if (idx >= 0) mergedProducts[idx] = sp; // update with DB version
-          else mergedProducts.unshift(sp); // new product from admin panel
+          if (idx >= 0) {
+            mergedProducts[idx] = { ...mergedProducts[idx], ...sp };
+          } else {
+            mergedProducts.unshift(sp);
+          }
         }
         setProducts(mergedProducts);
 
@@ -264,7 +299,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const addProduct = useCallback((p: Partial<Product>) => {
     const now = new Date().toISOString();
     
-    // UUID v4 generator fallback agar crypto ishlamasa
+    // UUID v4 generator fallback
     const generateUUID = () => {
       if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -293,16 +328,31 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       images: p.images ?? [],
       specifications: p.specifications ?? {},
       colors: [],
-      mechanism: p.mechanism ?? "Elektr tarmog'i",
+      mechanism: p.mechanism ?? "Avtomatik",
       is_active: p.is_active ?? true,
       is_new: p.is_new ?? true,
       created_at: now,
       updated_at: now,
     };
-    // Optimistic
+
+    // 1. In-memory update
     setProducts((prev) => [newProduct, ...prev]);
+
+    // 2. LocalStorage permanent persistence (survives page refresh even without DB)
+    try {
+      if (typeof window !== "undefined") {
+        const storedCustom: Product[] = JSON.parse(localStorage.getItem("tml_custom_products") || "[]");
+        const updated = [newProduct, ...storedCustom.filter((x) => x.id !== newId)];
+        localStorage.setItem("tml_custom_products", JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.warn("Could not save custom product to localStorage:", e);
+    }
     
-    // Supabase faqat bazada bor ustunlarni qabul qiladi.
+    // 3. Prepare clean payload for Supabase
+    const targetCatId = CATEGORY_UUID_MAP[newProduct.category_id || ""] || 
+      (newProduct.category_id && /^[0-9a-f-]{36}$/i.test(newProduct.category_id) ? newProduct.category_id : "118dee4b-db4d-e74d-7eeb-2264e986b373");
+
     const dbPayload = {
       id: newProduct.id,
       name: newProduct.name,
@@ -311,42 +361,65 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       price: newProduct.price,
       old_price: newProduct.old_price,
       discount: newProduct.discount,
-      category_id: newProduct.category_id,
+      category_id: targetCatId,
       brand: newProduct.brand,
       stock: newProduct.stock,
       sku: newProduct.sku,
       rating: newProduct.rating,
       reviews_count: newProduct.reviews_count,
       image: newProduct.image,
-      images: newProduct.images,
       specifications: newProduct.specifications,
       is_active: newProduct.is_active,
       is_new: newProduct.is_new,
       created_at: newProduct.created_at
     };
 
-    // Supabase
+    // 4. Send to Supabase
     supabase.from('products').insert(dbPayload).then(({ error }) => {
       if (error) {
-        console.error("Error adding product:", error);
-        alert("Saqlashda xatolik yuz berdi! Iltimos buni rasmga olib dasturchiga yuboring: " + JSON.stringify(error));
+        console.error("Supabase insert error:", error);
+      } else {
+        console.log("Saved product to Supabase successfully:", newProduct.id);
       }
     });
+
+    if (newProduct.images && newProduct.images.length > 0) {
+      const extraImages = newProduct.images.map((img: any, idx: number) => ({
+        id: generateUUID(),
+        product_id: newProduct.id,
+        url: typeof img === 'string' ? img : img.url,
+        sort_order: idx + 1
+      }));
+      supabase.from('product_images').insert(extraImages).catch(() => {});
+    }
+
     return newProduct;
   }, []);
 
   const updateProduct = useCallback((id: string, p: Partial<Product>) => {
     setProducts((prev) => prev.map((item) => (item.id === id ? { ...item, ...p } : item)));
     try {
-      const updatedLocalMap: Record<string, any> = JSON.parse(localStorage.getItem("tml_updated_products") || "{}");
-      updatedLocalMap[id] = { ...(updatedLocalMap[id] || {}), ...p };
-      localStorage.setItem("tml_updated_products", JSON.stringify(updatedLocalMap));
+      if (typeof window !== "undefined") {
+        const storedCustom: Product[] = JSON.parse(localStorage.getItem("tml_custom_products") || "[]");
+        const customIdx = storedCustom.findIndex((x) => x.id === id);
+        if (customIdx >= 0) {
+          storedCustom[customIdx] = { ...storedCustom[customIdx], ...p };
+          localStorage.setItem("tml_custom_products", JSON.stringify(storedCustom));
+        }
+
+        const updatedLocalMap: Record<string, any> = JSON.parse(localStorage.getItem("tml_updated_products") || "{}");
+        updatedLocalMap[id] = { ...(updatedLocalMap[id] || {}), ...p };
+        localStorage.setItem("tml_updated_products", JSON.stringify(updatedLocalMap));
+      }
     } catch {}
     
     // Remove invalid columns for Supabase
-    const { colors, mechanism, updated_at, ...validPayload } = p as any;
+    const { colors, mechanism, updated_at, images, ...validPayload } = p as any;
+    if (validPayload.category_id && CATEGORY_UUID_MAP[validPayload.category_id]) {
+      validPayload.category_id = CATEGORY_UUID_MAP[validPayload.category_id];
+    }
     
-    supabase.from('products').update({ ...validPayload }).eq('id', id).then(({ error }) => {
+    supabase.from('products').update(validPayload).eq('id', id).then(({ error }) => {
       if (error) console.error("Error updating product:", error);
     });
   }, []);
@@ -354,10 +427,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const deleteProduct = useCallback((id: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
     try {
-      const deletedLocalIds: string[] = JSON.parse(localStorage.getItem("tml_deleted_products") || "[]");
-      if (!deletedLocalIds.includes(id)) {
-        deletedLocalIds.push(id);
-        localStorage.setItem("tml_deleted_products", JSON.stringify(deletedLocalIds));
+      if (typeof window !== "undefined") {
+        const storedCustom: Product[] = JSON.parse(localStorage.getItem("tml_custom_products") || "[]");
+        const filteredCustom = storedCustom.filter((x) => x.id !== id);
+        localStorage.setItem("tml_custom_products", JSON.stringify(filteredCustom));
+
+        const deletedLocalIds: string[] = JSON.parse(localStorage.getItem("tml_deleted_products") || "[]");
+        if (!deletedLocalIds.includes(id)) {
+          deletedLocalIds.push(id);
+          localStorage.setItem("tml_deleted_products", JSON.stringify(deletedLocalIds));
+        }
       }
     } catch {}
     supabase.from('products').delete().eq('id', id).then(({ error }) => {
