@@ -305,6 +305,42 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:30:00.000Z",
     updated_at: "2025-01-26T10:30:00.000Z",
   },
+  {
+    id: "p-casio-edifice-solar-sapphire",
+    name: "Casio Edifice Solar Powered Sapphire Chronograph",
+    slug: "casio-edifice-solar-powered-sapphire-chronograph",
+    description: "Original Casio Edifice Solar Powered — quyosh energiyasida ishlovchi akkumulyatorli yuqori aniqlikdagi yapon xronografi. Qirilishga chidamli sapfir kristall shisha (Sapphire Crystal), 10 ATM (100 metr) suvga chidamlilik. Akkumulyator quvvati indikatori (High/Mid/Low), sekundomer (xronograf), 24 soatlik ko'rsatkich, sana darchasi va qora tabiiy charm tasma. Original quti, hujjatlar va 2 yil rasmiy kafolat bilan.",
+    price: 3050000,
+    old_price: 3500000,
+    discount: 13,
+    category_id: "cat-kvars-soatlari",
+    brand: "Casio",
+    stock: 5,
+    sku: "CAS-EDIFICE-SOLAR-CHRONO",
+    rating: 5.0,
+    reviews_count: 8,
+    image: "/products/casio_edifice_solar_sapphire.png",
+    images: [
+      { id: "img-edifice-solar-1", url: "/products/casio_edifice_solar_sapphire.png", sort_order: 1 },
+      { id: "img-edifice-solar-2", url: "/products/casio_edifice_solar_sapphire.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "44 mm",
+      "Korpus materiali": "Qora ion qoplamali zanglamas po'lat 316L (Black IP)",
+      "Mexanizm": "Casio Solar-Powered (Quyosh energiyali kvars)",
+      "Shisha turi": "Sapfir kristall (Sapphire Crystal — tirnalmaydi)",
+      "Tasma": "Oq chokli tabiiy qora charm tasma",
+      "Funksiyalar": "Xronograf sekundomer, Quvvat darajasi (H/M/L), 24-soatlik, Sana",
+      "Suvga chidamlilik": "10 ATM / 100 metr",
+      "Komplektatsiya": "Original Edifice qutisi, hujjatlar, xalqaro kafolat kartasi",
+      "Kafolat": "Mexanizmiga 2 yil rasmiy kafolat"
+    },
+    mechanism: "Kvars (Solar-Powered)",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:35:00.000Z",
+    updated_at: "2025-01-26T10:35:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
