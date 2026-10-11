@@ -235,6 +235,41 @@ export const DEFAULT_PRODUCTS: Product[] = [
     created_at: "2025-01-26T10:20:00.000Z",
     updated_at: "2025-01-26T10:20:00.000Z",
   },
+  {
+    id: "p-orient-bambino-grey-dial",
+    name: "Orient Bambino Multi-Function Grey Dial Automatic",
+    slug: "orient-bambino-multi-function-grey-dial",
+    description: "Orient Bambino Multi-Function — o'zgacha kulrang (antratsit) siferblatli va zaytun rangli charm tasmali yapon soati. Hafta kuni sub-diali, 24 soatlik vaqt indikatori, Rim raqamlari va soat 3 da sana darchasi. Yaponiyaning afsonaviy Orient avtomatik mexanizmi va gumbazsimon mineral shisha. 2 yil rasmiy kafolat bilan.",
+    price: 3420000,
+    old_price: 3900000,
+    discount: 12,
+    category_id: "cat-mexanik-soatlar",
+    brand: "Orient",
+    stock: 5,
+    sku: "ORT-BAMBINO-MF-GRY",
+    rating: 5.0,
+    reviews_count: 6,
+    image: "/products/orient_bambino_grey_dial.png",
+    images: [
+      { id: "img-bambino-gry-1", url: "/products/orient_bambino_grey_dial.png", sort_order: 1 },
+      { id: "img-bambino-gry-2", url: "/products/orient_bambino_grey_dial.png", sort_order: 2 }
+    ],
+    specifications: {
+      "Korpus o'lchami": "40.5 mm",
+      "Korpus materiali": "Zanglamas po'lat 316L",
+      "Mexanizm": "Orient Cal. Avtomatik (Yaponiya)",
+      "Shisha turi": "Gumbazsimon mineral kristall",
+      "Tasma": "Tabiiy zaytun-kulrang charm (Alligator naqshli)",
+      "Funksiyalar": "Hafta kuni sub-diali, 24 soatlik indikator, Sana",
+      "Suvga chidamlilik": "30 metr / 3 BAR",
+      "Kafolat": "2 yil rasmiy kafolat"
+    },
+    mechanism: "Avtomatik mexanik",
+    is_active: true,
+    is_new: true,
+    created_at: "2025-01-26T10:25:00.000Z",
+    updated_at: "2025-01-26T10:25:00.000Z",
+  },
 ];
 
 export const DEFAULT_SLIDERS: Slider[] = [
