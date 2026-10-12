@@ -168,47 +168,107 @@ export default function CartPage() {
           ) : (
             <div className="space-y-4">
               {detailed.map(({ item, product }) => (
-                <div key={item.productId} className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-navy-100 p-3 sm:p-4">
-                  <div className="flex items-start gap-3 sm:gap-4 flex-1">
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-navy-50">
-                      {product!.image && <Image src={product!.image} alt={product!.name} fill className="object-cover" />}
+                <div
+                  key={item.productId}
+                  className="rounded-2xl border border-navy-100 bg-white p-4 sm:p-5 shadow-xs transition hover:border-[#C5A059]/40 hover:shadow-md"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+                    {/* Left: Product Image & Comprehensive Luxury Details */}
+                    <div className="flex items-start gap-3.5 sm:gap-5 flex-1 min-w-0">
+                      {/* Watch Thumbnail */}
+                      <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-[#FCFAF7] border border-navy-100/80 p-1 flex items-center justify-center">
+                        {product!.image ? (
+                          <Image
+                            src={product!.image}
+                            alt={product!.name}
+                            fill
+                            className="object-contain p-1"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-navy-400 text-xs">
+                            Rasm yo'q
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Watch Information */}
+                      <div className="flex-1 min-w-0 pr-1">
+                        {/* Brand & Stock badges */}
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          {product!.brand && (
+                            <span className="inline-flex items-center rounded-md bg-[#5E3023]/10 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#5E3023] border border-[#5E3023]/20">
+                              {product!.brand}
+                            </span>
+                          )}
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                            {product!.stock > 0 ? "✓ Omborda mavjud" : "Tugagan"}
+                          </span>
+                        </div>
+
+                        {/* Full Product Name without truncation */}
+                        <Link
+                          href={`/products/${product!.slug}`}
+                          className="font-serif text-sm sm:text-base font-bold text-navy-900 hover:text-[#C5A059] transition-colors leading-snug line-clamp-2 block"
+                          title={product!.name}
+                        >
+                          {product!.name}
+                        </Link>
+
+                        {/* Specifications & Unit Price */}
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-navy-900/60">
+                          {product!.mechanism && (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-navy-700 bg-navy-50/80 px-2 py-0.5 rounded border border-navy-100">
+                              ⚙️ {product!.mechanism}
+                            </span>
+                          )}
+                          <span className="font-semibold text-navy-900/70">
+                            {formatSom(product!.price)} <span className="font-normal text-navy-900/40">/ dona</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Mobile Delete Button (top right) */}
+                      <button
+                        onClick={() => removeItem(item.productId)}
+                        aria-label="Mahsulotni o'chirish"
+                        className="sm:hidden -mt-1 -mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-navy-400 hover:bg-red-50 hover:text-danger transition"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                    <div className="flex-1 pr-2 sm:pr-0">
-                      <Link href={`/products/${product!.slug}`} className="font-semibold text-navy-900 hover:text-gold-500 line-clamp-2 leading-tight">
-                        {product!.name}
-                      </Link>
-                      <p className="mt-1 text-xs text-navy-900/50">
-                        {product!.brand} {product!.mechanism ? `| Mexanizm: ${product!.mechanism}` : ""}
-                      </p>
-                      <span className="mt-1 inline-flex items-center gap-1 text-xs text-success">
-                        {product!.stock > 0 ? "✓ Mavjud" : "Tugagan"}
-                      </span>
+
+                    {/* Right: Quantity Selector & Fixed Width Total Price */}
+                    <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 border-t sm:border-t-0 border-navy-100/60 pt-3 sm:pt-0 shrink-0">
+                      {/* Quantity Selector Container (Fixed Width) */}
+                      <div className="shrink-0 flex items-center">
+                        <QuantitySelector
+                          value={item.quantity}
+                          onChange={(v) => updateQuantity(item.productId, v)}
+                          max={product!.stock || 99}
+                        />
+                      </div>
+
+                      {/* Total Line Price Column (FIXED WIDTH: w-32 sm:w-36 md:w-40, right-aligned so buttons never shift!) */}
+                      <div className="w-32 sm:w-36 md:w-40 shrink-0 text-right">
+                        <div className="text-base sm:text-lg font-bold text-navy-900 whitespace-nowrap tabular-nums">
+                          {formatSom(product!.price * item.quantity)}
+                        </div>
+                        {item.quantity > 1 && (
+                          <div className="text-[11px] font-medium text-navy-900/45 whitespace-nowrap tabular-nums">
+                            {item.quantity} × {formatSom(product!.price)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Desktop Delete Button (Fixed Width) */}
+                      <button
+                        onClick={() => removeItem(item.productId)}
+                        aria-label="Mahsulotni o'chirish"
+                        className="hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-navy-100 text-navy-400 hover:border-red-200 hover:bg-red-50 hover:text-danger transition active:scale-95"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
-                    {/* Mobile Trash */}
-                    <button
-                      onClick={() => removeItem(item.productId)}
-                      className="sm:hidden text-navy-900/40 hover:text-danger flex shrink-0 items-center justify-center h-8 w-8 rounded-full hover:bg-danger/10 transition-colors -mt-1 -mr-1"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                  
-                  <div className="flex w-full items-center justify-between sm:justify-end gap-4 border-t sm:border-0 border-navy-100 pt-3 sm:pt-0 mt-2 sm:mt-0">
-                    <QuantitySelector
-                      value={item.quantity}
-                      onChange={(v) => updateQuantity(item.productId, v)}
-                      max={product!.stock || 99}
-                    />
-                    <div className="font-semibold text-navy-900 whitespace-nowrap text-right">
-                      {formatSom(product!.price * item.quantity)}
-                    </div>
-                    {/* Desktop Trash */}
-                    <button
-                      onClick={() => removeItem(item.productId)}
-                      className="hidden sm:flex text-navy-900/40 hover:text-danger shrink-0 items-center justify-center h-8 w-8 rounded-full hover:bg-danger/10 transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
                   </div>
                 </div>
               ))}

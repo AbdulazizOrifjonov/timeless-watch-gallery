@@ -12,21 +12,23 @@ export function QuantitySelector({
   max?: number;
 }) {
   return (
-    <div className="flex items-center gap-1.5 h-10">
+    <div className="inline-flex items-center gap-1.5 h-9 select-none shrink-0">
       <button
         onClick={() => onChange(Math.max(min, value - 1))}
-        className="flex h-full w-10 items-center justify-center rounded-lg bg-navy-900 text-xl font-medium text-white transition hover:bg-navy-800 disabled:opacity-40"
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-navy-100/80 hover:bg-[#5E3023] hover:text-white text-navy-900 border border-navy-200/80 text-base font-bold transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95"
         disabled={value <= min}
+        aria-label="Kamaytirish"
       >
-        -
+        −
       </button>
-      <div className="flex h-full w-12 shrink-0 items-center justify-center rounded-lg border border-navy-900/20 text-[15px] font-bold text-navy-900">
+      <div className="flex h-9 w-10 shrink-0 items-center justify-center rounded-lg bg-white border border-navy-200 text-sm font-bold text-navy-900 tabular-nums shadow-2xs">
         {value}
       </div>
       <button
         onClick={() => onChange(Math.min(max, value + 1))}
-        className="flex h-full w-10 items-center justify-center rounded-lg bg-navy-900 text-xl font-medium text-white transition hover:bg-navy-800 disabled:opacity-40"
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5E3023] hover:bg-[#462016] text-white text-base font-bold transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95 shadow-2xs"
         disabled={value >= max}
+        aria-label="Ko'paytirish"
       >
         +
       </button>
