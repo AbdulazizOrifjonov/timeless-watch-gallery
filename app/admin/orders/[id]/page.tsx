@@ -1,6 +1,7 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
+import { SafeImage } from "@/components/ui/SafeImage";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,7 +44,10 @@ export default function AdminOrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { orders, products, updateOrderStatus } = useStore();
+  const { orders, products, updateOrderStatus, refreshOrders } = useStore();
+  useEffect(() => {
+    refreshOrders();
+  }, [refreshOrders]);
   const { showToast } = useToast();
   const router = useRouter();
 
@@ -297,7 +301,7 @@ export default function AdminOrderDetailPage({
                               rel="noreferrer"
                               className="relative h-12 w-12 shrink-0 rounded-lg overflow-hidden border border-navy-100 hover:scale-105 transition"
                             >
-                              <Image src={src} alt="" fill sizes="48px" className="object-cover" />
+                              <SafeImage src={src} fallbackSrc="/placeholder.png" alt="" fill sizes="48px" className="object-cover" />
                             </a>
                           ))}
                         </div>

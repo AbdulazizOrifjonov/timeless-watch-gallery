@@ -58,6 +58,7 @@ interface StoreValue {
 
   createOrder: (o: Omit<Order, "id" | "order_number" | "status" | "created_at"> & { id?: string; order_number?: string }) => Order;
   updateOrderStatus: (id: string, status: OrderStatus) => void;
+  refreshOrders: () => Promise<void>;
 
   addPromocode: (p: Partial<Promocode>) => Promocode;
   updatePromocode: (id: string, p: Partial<Promocode>) => void;
@@ -180,34 +181,71 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             setSliders(DEFAULT_SLIDERS);
           }
         }
+        // Load orders: from localStorage, /api/orders, and Supabase
+        let localOrders: Order[] = [];
+        try {
+          if (typeof window !== "undefined") {
+            localOrders = JSON.parse(localStorage.getItem("tml_orders") || "[]");
+          }
+        } catch {}
+
+        let apiOrders: Order[] = [];
+        try {
+          const res = await fetch("/api/orders");
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && Array.isArray(json.orders)) {
+              apiOrders = json.orders;
+            }
+          }
+        } catch {}
+
+        let dbOrders: Order[] = [];
         if (o) {
-          setOrders(
-            o.map((row: any) => ({
-              id: row.id,
-              order_number: row.order_number || `ORD-${String(row.id).slice(0, 6)}`,
-              user_id: row.user_id || (Array.isArray(row.items) && row.items[0]?.user_id) || null,
-              full_name: row.customer_name || row.full_name || "Mijoz",
-              phone: row.phone || "",
-              address: row.address || "",
-              note: row.note || (Array.isArray(row.items) && row.items[0]?.note) || null,
-              subtotal: Number(row.total_amount || row.total || 0),
-              delivery_fee: Number(row.delivery_fee || 0),
-              discount: Number(row.discount || 0),
-              total: Number(row.total_amount || row.total || 0),
-              status: (row.status as OrderStatus) || "new",
-              items: (Array.isArray(row.items) ? row.items : []).map((it: any) => ({
-                id: it.id || it.product_id || "",
-                order_id: row.id,
-                product_id: it.product_id || it.id || "",
-                product_name: it.product_name || it.name || "Mahsulot",
-                product_image: it.product_image || it.image || null,
-                price: Number(it.price || 0),
-                quantity: Number(it.quantity || 1),
-              })),
-              created_at: row.created_at || new Date().toISOString(),
-            }))
-          );
+          dbOrders = o.map((row: any) => ({
+            id: row.id,
+            order_number: row.order_number || `ORD-${String(row.id).slice(0, 6)}`,
+            user_id: row.user_id || (Array.isArray(row.items) && row.items[0]?.user_id) || null,
+            full_name: row.customer_name || row.full_name || "Mijoz",
+            phone: row.phone || "",
+            address: row.address || "",
+            note: row.note || (Array.isArray(row.items) && row.items[0]?.note) || null,
+            subtotal: Number(row.total_amount || row.total || 0),
+            delivery_fee: Number(row.delivery_fee || 0),
+            discount: Number(row.discount || 0),
+            total: Number(row.total_amount || row.total || 0),
+            status: (row.status as OrderStatus) || "new",
+            items: (Array.isArray(row.items) ? row.items : []).map((it: any) => ({
+              id: it.id || it.product_id || "",
+              order_id: row.id,
+              product_id: it.product_id || it.id || "",
+              product_name: it.product_name || it.name || "Mahsulot",
+              product_image: it.product_image || it.image || null,
+              price: Number(it.price || 0),
+              quantity: Number(it.quantity || 1),
+            })),
+            created_at: row.created_at || new Date().toISOString(),
+          }));
         }
+
+        const allOrdersMap = new Map<string, Order>();
+        for (const ord of [...dbOrders, ...apiOrders, ...localOrders]) {
+          if (!allOrdersMap.has(ord.id)) {
+            allOrdersMap.set(ord.id, ord);
+          } else {
+            allOrdersMap.set(ord.id, { ...allOrdersMap.get(ord.id)!, ...ord });
+          }
+        }
+        const mergedOrders = Array.from(allOrdersMap.values()).sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+
+        setOrders(mergedOrders);
+        try {
+          if (typeof window !== "undefined") {
+            localStorage.setItem("tml_orders", JSON.stringify(mergedOrders));
+          }
+        } catch {}
       } catch (e) {
         console.error(e);
       } finally {
@@ -291,8 +329,23 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       )
       .subscribe();
 
+    const interval = setInterval(() => {
+      refreshOrders();
+    }, 12000);
+
+    const onFocus = () => {
+      refreshOrders();
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("focus", onFocus);
+    }
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(interval);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("focus", onFocus);
+      }
     };
   }, []);
 
@@ -513,6 +566,34 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     // simplified optimistic
   }, []);
 
+  const refreshOrders = useCallback(async () => {
+    try {
+      const res = await fetch("/api/orders");
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.orders)) {
+          setOrders((prev) => {
+            const map = new Map<string, Order>();
+            for (const ord of [...json.orders, ...prev]) {
+              map.set(ord.id, ord);
+            }
+            const updated = Array.from(map.values()).sort(
+              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
+            try {
+              if (typeof window !== "undefined") {
+                localStorage.setItem("tml_orders", JSON.stringify(updated));
+              }
+            } catch {}
+            return updated;
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Could not refresh orders:", e);
+    }
+  }, []);
+
   const createOrder = useCallback((o: Omit<Order, "id" | "order_number" | "status" | "created_at"> & { id?: string; order_number?: string }) => {
     const num = Math.floor(100000 + Math.random() * 900000);
     const orderId = o.id || (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : uid("o"));
@@ -526,8 +607,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     };
     setOrders((prev) => {
       if (prev.find((ord) => ord.id === newOrder.id)) return prev;
-      return [newOrder, ...prev];
+      const updated = [newOrder, ...prev];
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("tml_orders", JSON.stringify(updated));
+        }
+      } catch {}
+      return updated;
     });
+
+    // Send to /api/orders
+    fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newOrder),
+    }).catch(() => {});
 
     const formattedItems = (newOrder.items || []).map((it) => ({
       id: it.product_id || it.id || "",
@@ -566,7 +660,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateOrderStatus = useCallback((id: string, status: OrderStatus) => {
-    setOrders((prev) => prev.map((item) => (item.id === id ? { ...item, status } : item)));
+    setOrders((prev) => {
+      const updated = prev.map((item) => (item.id === id ? { ...item, status } : item));
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("tml_orders", JSON.stringify(updated));
+        }
+      } catch {}
+      return updated;
+    });
+
+    fetch("/api/orders", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status }),
+    }).catch(() => {});
+
     supabase.from('orders').update({ status }).eq('id', id).then(({ error }) => {
       if (error) console.error("Error updating order status:", error);
     });
@@ -705,6 +814,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         reorderSlider,
         createOrder,
         updateOrderStatus,
+        refreshOrders,
         addPromocode,
         updatePromocode,
         deletePromocode,

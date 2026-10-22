@@ -1,4 +1,6 @@
 ﻿import { NextResponse } from "next/server";
+import { addServerOrder } from "@/lib/server-orders";
+import { Order } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 
 function escapeHtml(str: string | number | undefined | null) {
@@ -60,22 +62,45 @@ export async function POST(req: Request) {
     ) % BADGES.length;
     const badge = BADGES[badgeIndex];
 
-    // 1. Supabase-ga server-side buyurtmani saqlash (zaxira va kafolat)
-    try {
-      const itemsToSave = items.map((it: any) => ({
-        id: it.id || it.product_id || "",
-        product_id: it.id || it.product_id || "",
-        name: it.name || it.product_name || "Mahsulot",
-        product_name: it.name || it.product_name || "Mahsulot",
-        price: Number(it.price || 0),
-        quantity: Number(it.quantity || 1),
-        image: it.image || it.product_image || null,
-        product_image: it.image || it.product_image || null,
-        user_id: data.userId || null,
-        note: data.note || null,
-      }));
+    // 1. Server-side va Supabase-ga buyurtmani saqlash (zaxira va kafolat)
+    const itemsToSave = items.map((it: any) => ({
+      id: it.id || it.product_id || "",
+      product_id: it.id || it.product_id || "",
+      name: it.name || it.product_name || "Mahsulot",
+      product_name: it.name || it.product_name || "Mahsulot",
+      price: Number(it.price || 0),
+      quantity: Number(it.quantity || 1),
+      image: it.image || it.product_image || null,
+      product_image: it.image || it.product_image || null,
+      user_id: data.userId || null,
+      note: data.note || null,
+    }));
 
-      const { error: dbError } = await supabase.from("orders").upsert({
+    const newServerOrder: Order = {
+      id: orderId,
+      order_number: orderNumber,
+      user_id: data.userId || null,
+      full_name: data.fullName || "Mijoz",
+      phone: data.phone || "",
+      address: data.address || "",
+      note: data.note || null,
+      subtotal: Number(data.subtotal || data.total || 0),
+      delivery_fee: Number(data.deliveryFee || 0),
+      discount: Number(data.discount || 0),
+      total: Number(data.total || 0),
+      status: "new",
+      items: itemsToSave,
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      addServerOrder(newServerOrder);
+    } catch (e) {
+      console.error("Error saving server order:", e);
+    }
+
+    try {
+      await supabase.from("orders").upsert({
         id: orderId,
         order_number: orderNumber,
         customer_name: data.fullName || "Mijoz",
@@ -84,14 +109,10 @@ export async function POST(req: Request) {
         total_amount: Number(data.total || 0),
         status: "new",
         items: itemsToSave,
-        created_at: new Date().toISOString(),
+        created_at: newServerOrder.created_at,
       });
-
-      if (dbError) {
-        console.error("Supabase upsert error in checkout route:", dbError);
-      }
     } catch (dbErr) {
-      console.error("Supabase database exception in checkout route:", dbErr);
+      // Supabase optional
     }
 
     if (!token || token.startsWith("YOUR_")) {

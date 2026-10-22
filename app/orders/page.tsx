@@ -14,12 +14,13 @@ import { formatSom, cn } from "@/lib/utils";
 
 export default function OrdersPage() {
   const { user, ready } = useAuth();
-  const { orders, profileSidebarOpen } = useStore();
+  const { orders, profileSidebarOpen, refreshOrders } = useStore();
   const router = useRouter();
 
   useEffect(() => {
     if (ready && !user) router.push("/login");
-  }, [ready, user, router]);
+    if (user) refreshOrders();
+  }, [ready, user, router, refreshOrders]);
 
   if (!user) return null;
 
