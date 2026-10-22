@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { useMemo, useState, useEffect } from "react";
 import { Eye, Package, Pencil, Plus, Trash2, CircleDot, AlertTriangle, Ban, CheckCircle2 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -174,7 +175,7 @@ export default function AdminProductsPage() {
                 <div className="flex items-start gap-3">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-navy-50 border border-navy-100">
                     {p.image ? (
-                      <Image src={p.image} alt={p.name} fill className="object-cover" />
+                      <SafeImage src={p.image} fallbackSrc="/placeholder.png" alt={p.name} fill className="object-cover" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-navy-300">
                         <Package size={20} />
@@ -275,7 +276,7 @@ export default function AdminProductsPage() {
                   <tr key={p.id} className="hover:bg-navy-50/40 transition-colors">
                     <td className="p-3">
                       <div className="relative h-11 w-11 overflow-hidden rounded-lg bg-navy-50">
-                        {p.image && <Image src={p.image} alt={p.name} fill className="object-cover" />}
+                        {p.image && <SafeImage src={p.image} fallbackSrc="/placeholder.png" alt={p.name} fill className="object-cover" />}
                       </div>
                     </td>
                     <td className="p-3">

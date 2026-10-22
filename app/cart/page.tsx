@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
 import { Trash2, Ticket, CheckCircle2, AlertCircle } from "lucide-react";
@@ -178,12 +179,7 @@ export default function CartPage() {
                       {/* Watch Thumbnail */}
                       <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 overflow-hidden rounded-xl bg-[#FCFAF7] border border-navy-100/80 p-1 flex items-center justify-center">
                         {product!.image ? (
-                          <Image
-                            src={product!.image}
-                            alt={product!.name}
-                            fill
-                            className="object-contain p-1"
-                          />
+                          <SafeImage src={product!.image} fallbackSrc="/placeholder.png" alt={product!.name} fill className="object-contain p-1" />
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-navy-400 text-xs">
                             Rasm yo'q

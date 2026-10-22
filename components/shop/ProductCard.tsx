@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { Heart, ShoppingCart } from "lucide-react";
 import { Product } from "@/types/database";
@@ -42,8 +43,9 @@ export const ProductCard = React.memo(function ProductCard({
   const hasSwipedRef = useRef(false);
 
   const images = useMemo(() => {
-    const all = [product.image, ...(product.images?.map((i) => i.url) || [])].filter(Boolean) as string[];
-    return all.length > 0 ? all : [];
+    const raw = [product.image, ...(product.images?.map((i) => i.url) || [])].filter(Boolean) as string[];
+    const distinct = Array.from(new Set(raw));
+    return distinct.length > 0 ? distinct : ["/placeholder.png"];
   }, [product]);
 
   const handleNext = (e?: React.MouseEvent) => {
@@ -173,8 +175,9 @@ export const ProductCard = React.memo(function ProductCard({
                   key={idx} 
                   className="relative h-full w-full shrink-0 select-none"
                 >
-                  <Image
+                  <SafeImage
                     src={src}
+                    fallbackSrc="/placeholder.png"
                     alt={`${product.name} - ${idx + 1}`}
                     fill
                     draggable={false}

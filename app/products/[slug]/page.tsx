@@ -2,6 +2,7 @@
 
 import { use, useMemo, useState, useEffect } from "react";
 import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
 import {
   Check,
@@ -61,17 +62,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   }, [product, slug]);
 
   const gallery = useMemo(() => {
-    if (!product) return [];
+    if (!product) return ["/placeholder.png"];
     let imgs = [product.image, ...(product.images?.map((i) => i.url) ?? [])].filter(
       Boolean
     ) as string[];
-    
-    // Ensure at least 3 dummy images if there are less
-    if (imgs.length === 0) imgs = ["/placeholder.jpg", "/placeholder.jpg", "/placeholder.jpg"];
-    while (imgs.length < 3) {
-      imgs.push(imgs[0]); // Duplicate the first image as dummy
-    }
-    return imgs;
+    const distinct = Array.from(new Set(imgs));
+    return distinct.length > 0 ? distinct : ["/placeholder.png"];
   }, [product]);
 
   const related = useMemo(
@@ -107,7 +103,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           onClick={() => setIsLightboxOpen(false)}
         >
           <div className="relative h-screen w-screen">
-            <Image src={gallery[activeImage]} alt={product.name} fill className="object-contain" />
+            <SafeImage src={gallery[activeImage]} fallbackSrc="/placeholder.png" alt={product.name} fill className="object-contain" />
             <button 
               onClick={() => setIsLightboxOpen(false)}
               className="absolute right-6 top-6 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/30 transition shadow-lg"
@@ -160,7 +156,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   activeImage === i ? "border-navy-900" : "border-navy-100"
                 }`}
               >
-                {src && <Image src={src} alt="" fill className="object-cover" />}
+                {src && <SafeImage src={src} fallbackSrc="/placeholder.png" alt="" fill className="object-cover" />}
               </button>
             ))}
           </div>
@@ -170,7 +166,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           >
             <div className="absolute inset-0 cursor-zoom-in" onClick={() => setIsLightboxOpen(true)}>
               {gallery[activeImage] && (
-                <Image src={gallery[activeImage]} alt={product.name} fill priority className="object-cover" />
+                <SafeImage src={gallery[activeImage]} fallbackSrc="/placeholder.png" alt={product.name} fill priority className="object-cover" />
               )}
             </div>
             

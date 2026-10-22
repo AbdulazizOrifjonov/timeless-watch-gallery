@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
@@ -340,7 +341,7 @@ export default function CheckoutPage() {
               {detailed.map(({ item, product }) => (
                 <div key={item.productId} className="flex items-center gap-3 text-sm">
                   <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-navy-50">
-                    {product!.image && <Image src={product!.image} alt="" fill className="object-cover" />}
+                    {product!.image && <SafeImage src={product!.image} fallbackSrc="/placeholder.png" alt="" fill className="object-cover" />}
                   </div>
                   <div className="flex-1">
                     <p className="font-medium">{product!.name}</p>

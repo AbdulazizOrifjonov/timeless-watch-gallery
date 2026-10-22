@@ -1,18 +1,18 @@
-import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/types/database";
 
 const FALLBACK_CATEGORY_IMAGES: Record<string, string> = {
-  "erkaklar-soatlari": "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=800&auto=format&fit=crop",
-  "ayollar-soatlari": "https://images.unsplash.com/photo-1508615039623-a25605d2b022?q=80&w=800&auto=format&fit=crop",
-  "mexanik-soatlar": "https://images.unsplash.com/photo-1524805444758-089113d48a6d?q=80&w=800&auto=format&fit=crop",
-  "kvars-soatlari": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop",
-  "shveytsariya-soatlari": "https://images.unsplash.com/photo-1539185441755-769473a23570?q=80&w=800&auto=format&fit=crop",
-  aksessuarlar: "https://images.unsplash.com/photo-1513094735237-8f2714d57c13?q=80&w=800&auto=format&fit=crop",
+  "erkaklar-soatlari": "/banners/rolex_oyster_perpetual.jpg",
+  "ayollar-soatlari": "/products/tissot_bellissima_swiss_ladies.png",
+  "mexanik-soatlar": "/banners/iwc_tourbillon_skeleton.jpg",
+  "kvars-soatlari": "/products/tissot_prx_40mm_blue_dial_quartz.jpg",
+  "shveytsariya-soatlari": "/banners/omega_speedmaster_chronograph.jpg",
+  aksessuarlar: "/banners/citizen_chronograph_tachymeter.jpg",
 };
 
-const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop";
+const DEFAULT_IMAGE = "/banners/rolex_oyster_perpetual.jpg";
 
 export function CategoryCard({
   category,
@@ -21,15 +21,19 @@ export function CategoryCard({
   category: Category;
   className?: string;
 }) {
-  const imageUrl = category.image_url || FALLBACK_CATEGORY_IMAGES[category.slug] || DEFAULT_IMAGE;
+  const isExternalUnsplash = category.image_url?.includes("unsplash.com");
+  const imageUrl = (!category.image_url || isExternalUnsplash) 
+    ? (FALLBACK_CATEGORY_IMAGES[category.slug] || DEFAULT_IMAGE)
+    : category.image_url;
 
   return (
     <Link
       href={`/categories/${category.slug}`}
       className={`group relative flex h-[160px] sm:h-[185px] w-[220px] sm:w-[270px] shrink-0 items-end overflow-hidden rounded-2xl bg-navy-950 border border-navy-800/80 shadow-md hover:shadow-xl hover:shadow-navy-950/20 hover:border-[#C5A059]/60 transition-all duration-300 select-none ${className}`}
     >
-      <Image
+      <SafeImage
         src={imageUrl}
+        fallbackSrc={FALLBACK_CATEGORY_IMAGES[category.slug] || DEFAULT_IMAGE}
         alt={category.name}
         fill
         sizes="(max-width: 640px) 220px, 270px"

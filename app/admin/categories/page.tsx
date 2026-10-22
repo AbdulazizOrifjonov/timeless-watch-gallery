@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import Image from "next/image";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { useState } from "react";
 import { Folder, CheckCircle2, PauseCircle, ListTree, Pencil, Plus, Trash2, Tag } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -84,7 +85,7 @@ export default function AdminCategoriesPage() {
               <div className="flex items-start gap-3">
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-navy-50 border border-navy-100">
                   {c.image_url ? (
-                    <Image src={c.image_url} alt={c.name} fill className="object-cover" />
+                    <SafeImage src={c.image_url} fallbackSrc="/placeholder.png" alt={c.name} fill className="object-cover" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-navy-300">
                       <Tag size={20} />
@@ -148,7 +149,7 @@ export default function AdminCategoriesPage() {
                 <tr key={c.id} className="hover:bg-navy-50/40 transition-colors">
                   <td className="p-3">
                     <div className="relative h-11 w-11 overflow-hidden rounded-lg bg-navy-50">
-                      {c.image_url && <Image src={c.image_url} alt={c.name} fill className="object-cover" />}
+                      {c.image_url && <SafeImage src={c.image_url} fallbackSrc="/placeholder.png" alt={c.name} fill className="object-cover" />}
                     </div>
                   </td>
                   <td className="p-3 font-medium text-navy-900">{c.name}</td>

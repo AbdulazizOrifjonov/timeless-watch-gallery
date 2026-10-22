@@ -725,32 +725,53 @@ export function useStore() {
   return context;
 }
 
-export async function fileToDataUrl(file: File, maxSize: number = 800, quality: number = 0.85): Promise<string> {
-  // If we wanted to upload directly to supabase here, we could.
-  // But for base64 fallback:
+export async function fileToDataUrl(file: File, maxSize: number = 800, quality: number = 0.8): Promise<string> {
   return new Promise((resolve) => {
     const reader = new FileReader();
+    reader.onerror = () => {
+      resolve("");
+    };
     reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-        if (width > maxSize) {
-          height = Math.round((height * maxSize) / width);
-          width = maxSize;
-        }
-        if (height > maxSize) {
-          width = Math.round((width * maxSize) / height);
-          height = maxSize;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL("image/jpeg", quality));
-      };
-      img.src = e.target?.result as string;
+      const rawResult = (e.target?.result as string) || "";
+      if (!rawResult) {
+        resolve("");
+        return;
+      }
+      try {
+        const img = new (window.Image || Image)();
+        img.onerror = () => {
+          resolve(rawResult);
+        };
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            let width = img.width || 800;
+            let height = img.height || 800;
+            if (width > maxSize) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            }
+            if (height > maxSize) {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL("image/jpeg", quality));
+            } else {
+              resolve(rawResult);
+            }
+          } catch {
+            resolve(rawResult);
+          }
+        };
+        img.src = rawResult;
+      } catch {
+        resolve(rawResult);
+      }
     };
     reader.readAsDataURL(file);
   });
