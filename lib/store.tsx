@@ -111,8 +111,27 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           }
         } catch {}
 
+        let apiCustomProducts: Product[] = [];
+        try {
+          const pRes = await fetch("/api/products");
+          if (pRes.ok) {
+            const pJson = await pRes.json();
+            if (pJson.success && Array.isArray(pJson.products)) {
+              apiCustomProducts = pJson.products;
+            }
+          }
+        } catch {}
+
+        const customProductMap = new Map<string, Product>();
+        for (const cp of [...apiCustomProducts, ...customLocalProducts]) {
+          if (!deletedLocalIds.includes(cp.id)) {
+            customProductMap.set(cp.id, cp);
+          }
+        }
+        const combinedCustom = Array.from(customProductMap.values());
+
         let mergedProducts: Product[] = [
-          ...customLocalProducts.filter((x) => !deletedLocalIds.includes(x.id)),
+          ...combinedCustom,
           ...DEFAULT_PRODUCTS.filter((x) => !deletedLocalIds.includes(x.id))
         ];
 
@@ -363,6 +382,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     
     const newId = generateUUID();
 
+    const finalImg = p.image || (p.images && p.images.length > 0 ? (typeof p.images[0] === 'string' ? p.images[0] : p.images[0].url) : "/placeholder.png");
+    const finalImgs = p.images && p.images.length > 0 ? p.images : [{ id: `img-${Date.now()}-1`, url: finalImg, sort_order: 1 }];
+
     const newProduct: Product = {
       id: newId,
       name: p.name ?? "Nomsiz",
@@ -370,15 +392,15 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       description: p.description ?? "",
       price: p.price ?? 0,
       old_price: p.old_price ?? null,
-      discount: p.discount ?? null,
+      discount: p.discount ?? (p.old_price && p.price && p.old_price > p.price ? Math.round(((p.old_price - p.price) / p.old_price) * 100) : null),
       category_id: p.category_id ?? null,
-      brand: p.brand ?? "",
-      stock: p.stock ?? 0,
-      sku: p.sku ?? "",
-      rating: p.rating ?? 0,
+      brand: p.brand ?? "Boshqa",
+      stock: p.stock ?? 99,
+      sku: p.sku || `WT-${Math.floor(100000 + Math.random() * 900000)}`,
+      rating: p.rating ?? 5.0,
       reviews_count: 0,
-      image: p.image ?? null,
-      images: p.images ?? [],
+      image: finalImg,
+      images: finalImgs,
       specifications: p.specifications ?? {},
       colors: [],
       mechanism: p.mechanism ?? "Avtomatik",
@@ -387,6 +409,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       created_at: now,
       updated_at: now,
     };
+
+    // Save to server API
+    fetch("/api/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProduct),
+    }).catch(() => {});
 
     // 1. In-memory update
     setProducts((prev) => [newProduct, ...prev]);
