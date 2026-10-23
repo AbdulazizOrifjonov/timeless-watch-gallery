@@ -36,8 +36,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const category = categories.find((c) => c.id === product?.category_id);
 
   const [activeImage, setActiveImage] = useState(0);
-  const [mainImageLoaded, setMainImageLoaded] = useState(false);
-  const [qty, setQty] = useState(1);
   const [tab, setTab] = useState(TABS[0]);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
@@ -47,7 +45,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   const [telegramHref, setTelegramHref] = useState(() => {
     const url = getProductPublicUrl(product?.slug || slug);
-    const text = `Assalomu alaykum, men ushbu mahsulotni xarid qilmoqchiman:\n\n📦 Mahsulot: ${product?.name || ""}\n💰 Narxi: ${product ? formatSom(product.price) : ""}\n\n🔗 Havola:\n${url}`;
+    const text = `Assalomu alaykum, men ushbu mahsulotni xarid qilmoqchiman:\n\n⏱ Mahsulot: ${product?.name || ""}\n💰 Narxi: ${product ? formatSom(product.price) : ""}\n\n🔗 Havola:\n${url}`;
     const base = TELEGRAM_ADMIN_URL.includes("?") ? `${TELEGRAM_ADMIN_URL}&` : `${TELEGRAM_ADMIN_URL}?`;
     return `${base}text=${encodeURIComponent(text)}`;
   });
@@ -55,7 +53,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   useEffect(() => {
     if (product) {
       const url = getProductPublicUrl(product.slug || slug);
-      const text = `Assalomu alaykum, men ushbu mahsulotni xarid qilmoqchiman:\n\n📦 Mahsulot: ${product.name}\n💰 Narxi: ${formatSom(product.price)}\n\n🔗 Havola:\n${url}`;
+      const text = `Assalomu alaykum, men ushbu mahsulotni xarid qilmoqchiman:\n\n⏱ Mahsulot: ${product.name}\n💰 Narxi: ${formatSom(product.price)}\n\n🔗 Havola:\n${url}`;
       const base = TELEGRAM_ADMIN_URL.includes("?") ? `${TELEGRAM_ADMIN_URL}&` : `${TELEGRAM_ADMIN_URL}?`;
       setTelegramHref(`${base}text=${encodeURIComponent(text)}`);
     }
@@ -63,12 +61,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   const gallery = useMemo(() => {
     if (!product) return ["/placeholder.png"];
-    let imgs = [product.image, ...(product.images?.map((i) => i.url) ?? [])].filter(
-      Boolean
-    ) as string[];
-    const distinct = Array.from(new Set(imgs));
+    const rawList: (string | undefined | null)[] = [
+      product.image,
+      ...(Array.isArray(product.images)
+        ? product.images.map((i: any) => (typeof i === "string" ? i : i?.url))
+        : [])
+    ];
+    const valid = rawList.filter(
+      (url): url is string => typeof url === "string" && url.trim().length > 0
+    );
+    const distinct = Array.from(new Set(valid));
     return distinct.length > 0 ? distinct : ["/placeholder.png"];
   }, [product]);
+
+  // Reset active image if out of bounds
+  useEffect(() => {
+    if (activeImage >= gallery.length) {
+      setActiveImage(0);
+    }
+  }, [gallery.length, activeImage]);
 
   const related = useMemo(
     () =>
@@ -147,19 +158,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         
         {/* Left Column: Images */}
         <div className="flex flex-col-reverse lg:flex-row gap-4">
-          <div className="flex lg:flex-col gap-3 overflow-x-auto lg:w-20 xl:w-24 shrink-0">
-            {gallery.map((src, i) => (
-              <button
-                key={i}
-                onClick={() => setActiveImage(i)}
-                className={`relative aspect-square w-20 shrink-0 overflow-hidden rounded-lg border-2 lg:w-full ${
-                  activeImage === i ? "border-navy-900" : "border-navy-100"
-                }`}
-              >
-                {src && <SafeImage src={src} fallbackSrc="/placeholder.png" alt="" fill className="object-cover" />}
-              </button>
-            ))}
-          </div>
+          {gallery.length > 1 && (
+            <div className="flex lg:flex-col gap-3 overflow-x-auto lg:w-20 xl:w-24 shrink-0 no-scrollbar">
+              {gallery.map((src, i) => (
+                <button
+                  type="button"
+                  key={i}
+                  onClick={() => setActiveImage(i)}
+                  className={`relative aspect-square block w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all lg:w-full bg-navy-50/50 ${
+                    activeImage === i ? "border-navy-900 shadow-sm" : "border-navy-100 hover:border-navy-300"
+                  }`}
+                >
+                  {src && <SafeImage src={src} fallbackSrc="/placeholder.png" alt="" fill className="object-cover" />}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div 
             className="group relative aspect-square w-full flex-1 overflow-hidden rounded-2xl bg-navy-50 border border-navy-50"
@@ -202,7 +216,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   </span>
                 )}
                 <h1 className="font-serif text-3xl font-bold text-navy-900">{product.name}</h1>
-                <p className="mt-1 text-sm text-navy-900/50">{category?.name || "Elektr asbobi"}</p>
+                <p className="mt-1 text-sm text-navy-900/50">{category?.name || "Eksklyuziv soatlar"}</p>
               </div>
               <button
                 onClick={() => toggle(product.id)}
@@ -316,14 +330,14 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             </a>
           </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
             <div className="flex items-center gap-3 rounded-xl border border-navy-100 p-4 bg-navy-50/50">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-sm text-navy-900">
                 <Truck size={18} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-navy-900">Bepul yetkazish</p>
-                <p className="text-xs text-navy-900/60">500 000 so'mdan yuqori</p>
+                <p className="text-sm font-semibold text-navy-900">Yetkazib berish</p>
+                <p className="text-xs text-navy-900/60">Kelishilgan holda</p>
               </div>
             </div>
             <div className="flex items-center gap-3 rounded-xl border border-navy-100 p-4 bg-navy-50/50">
@@ -357,7 +371,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                   <span className="text-[10px] bg-gold-500 text-navy-950 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">VIP</span>
                 </div>
                 <div className="text-[11px] sm:text-xs text-navy-900/70 mt-0.5">
-                  Jonli video-obzorlar, yangi uskunalar va maxsus narxlar!
+                  Jonli video-obzorlar, yangi soatlar va maxsus narxlar!
                 </div>
               </div>
             </div>

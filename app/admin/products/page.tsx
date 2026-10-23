@@ -172,10 +172,15 @@ export default function AdminProductsPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const finalImage = form.image || (form.images.length > 0 ? form.images[0] : "/placeholder.png");
-    const finalImages = form.images.length > 0 
-      ? (form.image && !form.images.includes(form.image) ? [form.image, ...form.images] : form.images)
-      : [finalImage];
+    const validExtra = (form.images || []).filter(
+      (img) => typeof img === 'string' && img.trim().length > 0 && img !== '/placeholder.png'
+    );
+    const mainImg = form.image?.trim() || (validExtra.length > 0 ? validExtra[0] : '/placeholder.png');
+    
+    const combined = Array.from(new Set([mainImg, ...validExtra])).filter(
+      (img) => img && img !== '/placeholder.png'
+    );
+    const finalImageList = combined.length > 0 ? combined : [mainImg];
 
     const autoSku = form.sku || `WT-${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -189,8 +194,8 @@ export default function AdminProductsPage() {
       sku: autoSku,
       mechanism: form.mechanism || "Avtomatik",
       stock: Number(form.stock) || 99,
-      image: finalImage,
-      images: finalImages.map((url, i) => ({
+      image: finalImageList[0] || "/placeholder.png",
+      images: finalImageList.map((url, i) => ({
         id: `img-${Date.now()}-${i}`,
         product_id: editing?.id || "",
         url,

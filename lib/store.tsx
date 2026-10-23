@@ -73,8 +73,39 @@ interface StoreValue {
 const StoreContext = createContext<StoreValue | null>(null);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS);
-  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [products, setProducts] = useState<Product[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const deletedLocalIds: string[] = JSON.parse(localStorage.getItem('tml_deleted_products') || '[]');
+        const customLocalProducts: Product[] = JSON.parse(localStorage.getItem('tml_custom_products') || '[]');
+        const updatedLocalMap = JSON.parse(localStorage.getItem('tml_updated_products') || '{}');
+        const filteredCustom = customLocalProducts.filter((x: Product) => !deletedLocalIds.includes(x.id));
+        const filteredDefaults = DEFAULT_PRODUCTS.filter((x) => !deletedLocalIds.includes(x.id));
+        const merged = [...filteredCustom, ...filteredDefaults].map((item) => {
+          if (updatedLocalMap[item.id]) return { ...item, ...updatedLocalMap[item.id] };
+          return item;
+        });
+        if (merged.length > 0) return merged;
+      } catch {}
+    }
+    return DEFAULT_PRODUCTS;
+  });
+
+  const [categories, setCategories] = useState<Category[]>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const customCats: Category[] = JSON.parse(localStorage.getItem('tml_custom_categories') || '[]');
+        if (Array.isArray(customCats) && customCats.length > 0) {
+          const map = new Map<string, Category>();
+          for (const c of [...customCats, ...DEFAULT_CATEGORIES]) {
+            map.set(c.id, c);
+          }
+          return Array.from(map.values());
+        }
+      } catch {}
+    }
+    return DEFAULT_CATEGORIES;
+  });
   const [sliders, setSliders] = useState<Slider[]>(DEFAULT_SLIDERS);
   const [orders, setOrders] = useState<Order[]>([]);
   const [promocodes, setPromocodes] = useState<Promocode[]>(DEFAULT_PROMOCODES);
@@ -130,9 +161,18 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         }
         const combinedCustom = Array.from(customProductMap.values());
 
+        // Custom products from admin always take top priority at index 0..N
+        const remainingSupabase = validSupabaseProducts.filter(
+          (sp: Product) => !deletedLocalIds.includes(sp.id) && !customProductMap.has(sp.id)
+        );
+        const remainingDefaults = DEFAULT_PRODUCTS.filter(
+          (x) => !deletedLocalIds.includes(x.id) && !customProductMap.has(x.id) && !validSupabaseProducts.some((sp: Product) => sp.id === x.id)
+        );
+
         let mergedProducts: Product[] = [
           ...combinedCustom,
-          ...DEFAULT_PRODUCTS.filter((x) => !deletedLocalIds.includes(x.id))
+          ...remainingSupabase,
+          ...remainingDefaults
         ];
 
         mergedProducts = mergedProducts.map((item) => {
@@ -141,26 +181,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           }
           return item;
         });
-
-        for (const sp of validSupabaseProducts) {
-          if (deletedLocalIds.includes(sp.id)) continue;
-          const idx = mergedProducts.findIndex((x) => x.id === sp.id);
-          if (idx >= 0) {
-            mergedProducts[idx] = { ...mergedProducts[idx], ...sp };
-          } else {
-            mergedProducts.unshift(sp);
-          }
-        }
         setProducts(mergedProducts);
 
+        let customLocalCategories: Category[] = [];
+        try {
+          if (typeof window !== 'undefined') {
+            customLocalCategories = JSON.parse(localStorage.getItem('tml_custom_categories') || '[]');
+          }
+        } catch {}
+
         const validSupabaseCategories = c ? c.filter((cat: Category) => cat.id !== "dummy-id") : [];
-        const mergedCategories = [...DEFAULT_CATEGORIES];
-        for (const sc of validSupabaseCategories) {
-          const idx = mergedCategories.findIndex((x) => x.id === sc.id);
-          if (idx >= 0) mergedCategories[idx] = sc;
-          else mergedCategories.unshift(sc);
+        const categoryMap = new Map<string, Category>();
+        for (const cat of [...customLocalCategories, ...validSupabaseCategories, ...DEFAULT_CATEGORIES]) {
+          categoryMap.set(cat.id, cat);
         }
-        setCategories(mergedCategories);
+        setCategories(Array.from(categoryMap.values()));
 
         if (s && s.length > 0) {
           const promoConfig = s.find((item) => item.id === "system_promocodes");
@@ -537,7 +572,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       product_count: 0,
       created_at: new Date().toISOString(),
     };
-    setCategories((prev) => [...prev, newCategory]);
+    setCategories((prev) => [newCategory, ...prev]);
+    try {
+      if (typeof window !== 'undefined') {
+        const stored: Category[] = JSON.parse(localStorage.getItem('tml_custom_categories') || '[]');
+        localStorage.setItem('tml_custom_categories', JSON.stringify([newCategory, ...stored.filter(x => x.id !== newCategory.id)]));
+      }
+    } catch {}
     supabase.from('categories').insert(newCategory).then(({ error }) => {
       if (error) console.error("Error adding category:", error);
     });
@@ -546,6 +587,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const updateCategory = useCallback((id: string, c: Partial<Category>) => {
     setCategories((prev) => prev.map((item) => (item.id === id ? { ...item, ...c } : item)));
+    try {
+      if (typeof window !== 'undefined') {
+        const stored: Category[] = JSON.parse(localStorage.getItem('tml_custom_categories') || '[]');
+        const idx = stored.findIndex(x => x.id === id);
+        if (idx >= 0) {
+          stored[idx] = { ...stored[idx], ...c };
+          localStorage.setItem('tml_custom_categories', JSON.stringify(stored));
+        }
+      }
+    } catch {}
     supabase.from('categories').update(c).eq('id', id).then(({ error }) => {
       if (error) console.error("Error updating category:", error);
     });
@@ -553,6 +604,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const deleteCategory = useCallback((id: string) => {
     setCategories((prev) => prev.filter((p) => p.id !== id));
+    try {
+      if (typeof window !== 'undefined') {
+        const stored: Category[] = JSON.parse(localStorage.getItem('tml_custom_categories') || '[]');
+        localStorage.setItem('tml_custom_categories', JSON.stringify(stored.filter(x => x.id !== id)));
+      }
+    } catch {}
     supabase.from('categories').delete().eq('id', id).then(({ error }) => {
       if (error) console.error("Error deleting category:", error);
     });
