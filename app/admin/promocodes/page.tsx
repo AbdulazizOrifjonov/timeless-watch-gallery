@@ -13,11 +13,13 @@ import {
   Check,
   Calendar,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { StatCard } from "@/components/admin/StatCard";
 import { Modal } from "@/components/admin/Modal";
 import { useStore } from "@/lib/store";
+import { useToast } from "@/context/ToastContext";
 import { Promocode, PromoDiscountType } from "@/types/database";
 import { formatSom } from "@/lib/utils";
 
@@ -34,6 +36,9 @@ const EMPTY_PROMO = {
 
 export default function AdminPromocodesPage() {
   const { promocodes, addPromocode, updatePromocode, deletePromocode, togglePromocode } = useStore();
+  const { showToast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -81,31 +86,42 @@ export default function AdminPromocodesPage() {
     setModalOpen(true);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const payload: Partial<Promocode> = {
-      code: form.code.toUpperCase().trim(),
-      discount_type: form.discount_type,
-      discount_value: Number(form.discount_value) || 0,
-      min_order_amount: Number(form.min_order_amount) || 0,
-      max_discount_amount: form.max_discount_amount ? Number(form.max_discount_amount) : null,
-      usage_limit: form.usage_limit ? Number(form.usage_limit) : null,
-      expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
-      is_active: form.is_active,
-    };
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      const payload: Partial<Promocode> = {
+        code: form.code.toUpperCase().trim(),
+        discount_type: form.discount_type,
+        discount_value: Number(form.discount_value) || 0,
+        min_order_amount: Number(form.min_order_amount) || 0,
+        max_discount_amount: form.max_discount_amount ? Number(form.max_discount_amount) : null,
+        usage_limit: form.usage_limit ? Number(form.usage_limit) : null,
+        expires_at: form.expires_at ? new Date(form.expires_at).toISOString() : null,
+        is_active: form.is_active,
+      };
 
-    if (editing) {
-      updatePromocode(editing.id, payload);
-    } else {
-      addPromocode(payload);
+      if (editing) {
+        await updatePromocode(editing.id, payload);
+        showToast("Promokod muvaffaqiyatli yangilandi!", "success");
+      } else {
+        await addPromocode(payload);
+        showToast("Yangi promokod muvaffaqiyatli yaratildi!", "success");
+      }
+      setModalOpen(false);
+    } catch (err) {
+      showToast("Promokodni saqlashda xatolik yuz berdi", "error");
+    } finally {
+      setIsSubmitting(false);
     }
-    setModalOpen(false);
   }
 
   function copyCode(code: string, id: string) {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(code);
       setCopiedId(id);
+      showToast("Promokod nusxalandi!", "info");
       setTimeout(() => setCopiedId(null), 1800);
     }
   }
@@ -113,7 +129,7 @@ export default function AdminPromocodesPage() {
   return (
     <div>
       <AdminHeader title="Timeless — The Watch Gallery Admin" searchPlaceholder="Promokod kodi bo'yicha qidirish..." />
-      <div className="p-6">
+      <div className="p-3.5 sm:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-navy-900">Promokodlar</h1>
@@ -502,16 +518,19 @@ export default function AdminPromocodesPage() {
           <div className="flex justify-end gap-3 border-t border-navy-100 pt-4">
             <button
               type="button"
+              disabled={isSubmitting}
               onClick={() => setModalOpen(false)}
-              className="rounded-lg border border-navy-200 px-4 py-2.5 text-sm font-semibold text-navy-900 hover:bg-navy-50 transition"
+              className="rounded-lg border border-navy-200 px-4 py-2.5 text-sm font-semibold text-navy-900 hover:bg-navy-50 transition disabled:opacity-50"
             >
               Bekor qilish
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-navy-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-800 transition shadow-xs"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-lg bg-navy-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-800 transition shadow-xs disabled:opacity-50"
             >
-              {editing ? "Saqlash" : "Yaratish"}
+              {isSubmitting && <Loader2 size={16} className="animate-spin text-[#C5A059]" />}
+              <span>{isSubmitting ? "Saqlanmoqda..." : editing ? "Saqlash" : "Yaratish"}</span>
             </button>
           </div>
         </form>
@@ -531,22 +550,33 @@ export default function AdminPromocodesPage() {
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
+              disabled={isDeleting}
               onClick={() => setDeletingPromo(null)}
-              className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-navy-50 transition"
+              className="rounded-lg border border-navy-200 px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-navy-50 transition disabled:opacity-50"
             >
               Bekor qilish
             </button>
             <button
               type="button"
-              onClick={() => {
-                if (deletingPromo) {
-                  deletePromocode(deletingPromo.id);
-                  setDeletingPromo(null);
+              disabled={isDeleting}
+              onClick={async () => {
+                if (deletingPromo && !isDeleting) {
+                  setIsDeleting(true);
+                  try {
+                    await deletePromocode(deletingPromo.id);
+                    showToast("Promokod muvaffaqiyatli o'chirildi", "info");
+                    setDeletingPromo(null);
+                  } catch (err) {
+                    showToast("O'chirishda xatolik yuz berdi", "error");
+                  } finally {
+                    setIsDeleting(false);
+                  }
                 }
               }}
-              className="rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white hover:bg-danger/90 transition shadow-xs"
+              className="flex items-center gap-1.5 rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white hover:bg-danger/90 transition shadow-xs disabled:opacity-50"
             >
-              O'chirish
+              {isDeleting && <Loader2 size={14} className="animate-spin" />}
+              <span>{isDeleting ? "O'chirilmoqda..." : "O'chirish"}</span>
             </button>
           </div>
         </div>

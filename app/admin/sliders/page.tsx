@@ -1,13 +1,14 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { useState } from "react";
-import { Images, Eye, EyeOff, ListOrdered, Pencil, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Images, Eye, EyeOff, ListOrdered, Pencil, Plus, Trash2, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { StatCard } from "@/components/admin/StatCard";
 import { Modal } from "@/components/admin/Modal";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useStore } from "@/lib/store";
+import { useToast } from "@/context/ToastContext";
 import { Slider } from "@/types/database";
 
 const EMPTY_FORM = {
@@ -21,15 +22,26 @@ const EMPTY_FORM = {
 
 export default function AdminSlidersPage() {
   const { sliders, addSlider, updateSlider, deleteSlider: storeDeleteSlider, reorderSlider } = useStore();
+  const { showToast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Slider | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const sorted = [...sliders].sort((a, b) => a.sort_order - b.sort_order);
 
-  function deleteSlider(id: string) {
+  async function deleteSlider(id: string) {
     if (confirm("Rostdan ham ushbu sliderni o'chirmoqchimisiz?")) {
-      storeDeleteSlider(id);
+      setDeletingId(id);
+      try {
+        await storeDeleteSlider(id);
+        showToast("Slider muvaffaqiyatli o'chirildi", "info");
+      } catch (err) {
+        showToast("O'chirishda xatolik yuz berdi", "error");
+      } finally {
+        setDeletingId(null);
+      }
     }
   }
 
@@ -52,22 +64,35 @@ export default function AdminSlidersPage() {
     setModalOpen(true);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.image_url) return;
-    const payload = { ...form, image_url: form.image_url as string };
-    if (editing) {
-      updateSlider(editing.id, payload);
-    } else {
-      addSlider({ ...payload, sort_order: sliders.length + 1 });
+    if (isSubmitting) return;
+    if (!form.image_url) {
+      showToast("Iltimos, slider rasmini yuklang!", "error");
+      return;
     }
-    setModalOpen(false);
+    setIsSubmitting(true);
+    try {
+      const payload = { ...form, image_url: form.image_url as string };
+      if (editing) {
+        await updateSlider(editing.id, payload);
+        showToast("Slider muvaffaqiyatli yangilandi!", "success");
+      } else {
+        await addSlider({ ...payload, sort_order: sliders.length + 1 });
+        showToast("Yangi slider muvaffaqiyatli qo'shildi!", "success");
+      }
+      setModalOpen(false);
+    } catch (err) {
+      showToast("Sliderni saqlashda xatolik yuz berdi", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div>
       <AdminHeader title="Timeless — The Watch Gallery Admin" searchPlaceholder="Sliderlarni qidirish..." />
-      <div className="p-6">
+      <div className="p-3.5 sm:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-navy-900">Sliderlar</h1>
@@ -166,10 +191,11 @@ export default function AdminSlidersPage() {
                   </button>
                   <button
                     onClick={() => deleteSlider(s.id)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-danger hover:bg-red-100 transition active:scale-95"
+                    disabled={deletingId === s.id}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-danger hover:bg-red-100 transition active:scale-95 disabled:opacity-50"
                     title="O'chirish"
                   >
-                    <Trash2 size={14} />
+                    {deletingId === s.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                   </button>
                 </div>
               </div>
@@ -227,7 +253,14 @@ export default function AdminSlidersPage() {
                   <td className="p-3 text-right">
                     <div className="inline-flex items-center gap-1">
                       <button onClick={() => openEdit(s)} className="rounded-lg border border-navy-100 p-1.5 hover:bg-navy-50 text-navy-700" title="Tahrirlash"><Pencil size={14} /></button>
-                      <button onClick={() => deleteSlider(s.id)} className="rounded-lg border border-red-100 p-1.5 text-danger hover:bg-red-50" title="O'chirish"><Trash2 size={14} /></button>
+                      <button
+                        onClick={() => deleteSlider(s.id)}
+                        disabled={deletingId === s.id}
+                        className="rounded-lg border border-red-100 p-1.5 text-danger hover:bg-red-50 disabled:opacity-50"
+                        title="O'chirish"
+                      >
+                        {deletingId === s.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -274,8 +307,15 @@ export default function AdminSlidersPage() {
             <label htmlFor="slider-active" className="text-sm">Faol (bosh sahifada ko'rinadi)</label>
           </div>
           <div className="flex justify-end gap-3 border-t border-navy-100 pt-4">
-            <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg border border-navy-100 px-4 py-2.5 text-sm font-medium">Bekor qilish</button>
-            <button className="rounded-lg bg-navy-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-navy-800">{editing ? "Saqlash" : "Qo'shish"}</button>
+            <button type="button" disabled={isSubmitting} onClick={() => setModalOpen(false)} className="rounded-lg border border-navy-100 px-4 py-2.5 text-sm font-medium disabled:opacity-50">Bekor qilish</button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-lg bg-navy-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-navy-800 disabled:opacity-50"
+            >
+              {isSubmitting && <Loader2 size={16} className="animate-spin text-[#C5A059]" />}
+              <span>{isSubmitting ? "Saqlanmoqda..." : editing ? "Saqlash" : "Qo'shish"}</span>
+            </button>
           </div>
         </form>
       </Modal>

@@ -5,13 +5,14 @@ import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { Header } from "@/components/shop/Header";
 import { Footer } from "@/components/shop/Footer";
 import { YMaps, Map as YandexMap, Placemark } from "@pbe/react-yandex-maps";
 import { useCart } from "@/context/CartContext";
 import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
+import { useToast } from "@/context/ToastContext";
 import { formatSom } from "@/lib/utils";
 
 const TELEGRAM_CHANNEL_URL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || "https://t.me";
@@ -20,6 +21,7 @@ export default function CheckoutPage() {
   const { items, clear } = useCart();
   const { products, createOrder } = useStore();
   const { user, ready: authReady } = useAuth();
+  const { showToast } = useToast();
   const router = useRouter();
 
   const [fullName, setFullName] = useState(user?.fullName ?? "");
@@ -99,111 +101,121 @@ export default function CheckoutPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
-    setLoading(true);
-    if (loading) return;
-    
+
     if (!fullName || !phone || !address) {
       setError("Iltimos, barcha majburiy maydonlarni to'ldiring.");
+      showToast("Iltimos, barcha majburiy maydonlarni to'ldiring.", "error");
       return;
     }
     if (detailed.length === 0) {
       setError("Savatchangiz bo'sh.");
+      showToast("Savatchangiz bo'sh.", "error");
       return;
     }
-    
+
     setLoading(true);
-    
-    const siteOrigin =
-      typeof window !== "undefined" && window.location.origin
-        ? window.location.origin
-        : "https://uzoelektro.uz";
-
-    const itemsData = detailed.map((d) => {
-      const prod = d.product!;
-      const prodImages: string[] = [];
-      if (prod.image) prodImages.push(prod.image);
-      if (Array.isArray(prod.images)) {
-        for (const im of prod.images) {
-          const u = typeof im === "string" ? im : (im as any)?.url;
-          if (u && !prodImages.includes(u)) {
-            prodImages.push(u);
-          }
-        }
-      }
-      // Har bir mahsulot uchun kamida 1 ta, ko'pi bilan 3 tagacha rasm
-      const limitedImages = prodImages.slice(0, 3);
-      const slug = prod.slug || prod.id;
-      const productUrl = `${siteOrigin}/products/${encodeURIComponent(slug)}`;
-
-      return {
-        id: prod.id,
-        name: prod.name,
-        image: prod.image || limitedImages[0] || null,
-        images: limitedImages,
-        quantity: d.item.quantity,
-        price: prod.price,
-        slug: prod.slug,
-        productUrl,
-      };
-    });
-
-    const orderNum = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
-    const orderId =
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `ord_${Date.now()}`;
+    setError("");
 
     try {
-      await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId,
-          orderNumber: orderNum,
-          userId: user?.id ?? null,
-          fullName,
-          phone,
-          address,
-          location,
-          note,
-          items: itemsData,
-          subtotal,
-          discount: discountAmount,
-          promoCode: appliedPromo?.code || null,
-          total,
-          deliveryFee
-        })
-      });
-    } catch (err) {
-      console.error("Failed to send order to telegram", err);
-    }
+      const siteOrigin =
+        typeof window !== "undefined" && window.location.origin
+          ? window.location.origin
+          : "https://uzoelektro.uz";
 
-    const order = createOrder({
-      id: orderId,
-      order_number: orderNum,
-      user_id: user?.id ?? null,
-      full_name: fullName,
-      phone,
-      address,
-      note: note ? (appliedPromo ? `${note} (Promokod: ${appliedPromo.code})` : note) : (appliedPromo ? `Promokod: ${appliedPromo.code}` : null),
-      subtotal,
-      delivery_fee: deliveryFee,
-      discount: discountAmount,
-      total,
-      items: detailed.map((d) => ({
-        id: d.product!.id,
-        order_id: orderId,
-        product_id: d.product!.id,
-        product_name: d.product!.name,
-        product_image: d.product!.image,
-        price: d.product!.price,
-        quantity: d.item.quantity,
-      })),
-    });
-    clear();
-    try { sessionStorage.removeItem("gws_applied_promo"); } catch {}
-    setPlacedOrder(order.order_number);
-    setLoading(false);
+      const itemsData = detailed.map((d) => {
+        const prod = d.product!;
+        const prodImages: string[] = [];
+        if (prod.image) prodImages.push(prod.image);
+        if (Array.isArray(prod.images)) {
+          for (const im of prod.images) {
+            const u = typeof im === "string" ? im : (im as any)?.url;
+            if (u && !prodImages.includes(u)) {
+              prodImages.push(u);
+            }
+          }
+        }
+        // Har bir mahsulot uchun kamida 1 ta, ko'pi bilan 3 tagacha rasm
+        const limitedImages = prodImages.slice(0, 3);
+        const slug = prod.slug || prod.id;
+        const productUrl = `${siteOrigin}/products/${encodeURIComponent(slug)}`;
+
+        return {
+          id: prod.id,
+          name: prod.name,
+          image: prod.image || limitedImages[0] || null,
+          images: limitedImages,
+          quantity: d.item.quantity,
+          price: prod.price,
+          slug: prod.slug,
+          productUrl,
+        };
+      });
+
+      const orderNum = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+      const orderId =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `ord_${Date.now()}`;
+
+      try {
+        await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId,
+            orderNumber: orderNum,
+            userId: user?.id ?? null,
+            fullName,
+            phone,
+            address,
+            location,
+            note,
+            items: itemsData,
+            subtotal,
+            discount: discountAmount,
+            promoCode: appliedPromo?.code || null,
+            total,
+            deliveryFee
+          })
+        });
+      } catch (err) {
+        console.error("Failed to send order to telegram", err);
+      }
+
+      const order = await createOrder({
+        id: orderId,
+        order_number: orderNum,
+        user_id: user?.id ?? null,
+        full_name: fullName,
+        phone,
+        address,
+        note: note ? (appliedPromo ? `${note} (Promokod: ${appliedPromo.code})` : note) : (appliedPromo ? `Promokod: ${appliedPromo.code}` : null),
+        subtotal,
+        delivery_fee: deliveryFee,
+        discount: discountAmount,
+        total,
+        items: detailed.map((d) => ({
+          id: d.product!.id,
+          order_id: orderId,
+          product_id: d.product!.id,
+          product_name: d.product!.name,
+          product_image: d.product!.image,
+          price: d.product!.price,
+          quantity: d.item.quantity,
+        })),
+      });
+
+      clear();
+      try { sessionStorage.removeItem("gws_applied_promo"); } catch {}
+      setPlacedOrder(order.order_number);
+      showToast("Buyurtmangiz muvaffaqiyatli qabul qilindi!", "success");
+    } catch (err) {
+      console.error(err);
+      setError("Buyurtmani rasmiylashtirishda xatolik yuz berdi. Iltimos qaytadan urining.");
+      showToast("Buyurtmani rasmiylashtirishda xatolik yuz berdi.", "error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (placedOrder) {
@@ -365,9 +377,16 @@ export default function CheckoutPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-[#5E3023] py-3.5 text-sm font-bold text-white hover:bg-[#462016] border border-[#C5A059]/40 transition shadow-md shadow-[#5E3023]/25 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center justify-center gap-2 w-full rounded-xl bg-[#5E3023] py-3.5 text-sm font-bold text-white hover:bg-[#462016] border border-[#C5A059]/40 transition shadow-md shadow-[#5E3023]/25 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Yuborilmoqda..." : "Buyurtmani tasdiqlash"}
+              {loading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin text-[#C5A059]" />
+                  <span>Yuborilmoqda...</span>
+                </>
+              ) : (
+                "Buyurtmani tasdiqlash"
+              )}
             </button>
           </aside>
         </form>

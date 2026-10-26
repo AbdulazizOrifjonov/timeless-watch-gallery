@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   Check,
   Heart,
+  Loader2,
   ShieldCheck,
   ShoppingCart,
   Truck,
@@ -19,6 +20,7 @@ import { ProductCard } from "@/components/shop/ProductCard";
 import { useStore } from "@/lib/store";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { useToast } from "@/context/ToastContext";
 import { calcDiscount, formatSom, getProductPublicUrl, cn } from "@/lib/utils";
 
 const TABS = ["Tavsif", "Xususiyatlar", "Sharhlar", "Yetkazib berish", "Qaytarish"];
@@ -31,6 +33,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   const { products, categories, ready } = useStore();
   const { items, addItem, updateQuantity } = useCart();
   const { toggle, isWished } = useWishlist();
+  const { showToast } = useToast();
+  const [isAdding, setIsAdding] = useState(false);
 
   const product = products.find((p) => p.slug === slug || p.id === slug);
   const category = categories.find((c) => c.id === product?.category_id);
@@ -300,11 +304,32 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               </div>
             ) : (
               <button
-                onClick={() => addItem(product.id, 1)}
-                disabled={product.stock <= 0}
+                onClick={() => {
+                  if (isAdding) return;
+                  setIsAdding(true);
+                  try {
+                    addItem(product.id, 1);
+                    showToast(`${product.name} savatchaga qo'shildi!`, "success");
+                  } catch (e) {
+                    showToast("Xatolik yuz berdi", "error");
+                  } finally {
+                    setTimeout(() => setIsAdding(false), 350);
+                  }
+                }}
+                disabled={product.stock <= 0 || isAdding}
                 className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-[#5E3023] hover:bg-[#462016] border border-[#C5A059]/40 px-2 text-sm font-bold text-white transition shadow-md shadow-[#5E3023]/25 disabled:opacity-40"
               >
-                <ShoppingCart size={18} /> Savatchaga qo'shish
+                {isAdding ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin text-[#C5A059]" />
+                    <span>Qo'shilmoqda...</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart size={18} />
+                    <span>Savatchaga qo'shish</span>
+                  </>
+                )}
               </button>
             )}
 

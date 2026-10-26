@@ -1,30 +1,42 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { useState } from "react";
-import { Folder, CheckCircle2, PauseCircle, ListTree, Pencil, Plus, Trash2, Tag } from "lucide-react";
+import { Folder, CheckCircle2, PauseCircle, ListTree, Pencil, Plus, Trash2, Tag, Loader2 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { StatCard } from "@/components/admin/StatCard";
 import { Modal } from "@/components/admin/Modal";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useStore } from "@/lib/store";
+import { useToast } from "@/context/ToastContext";
 import { Category } from "@/types/database";
 
 const EMPTY_FORM = { name: "", description: "", image_url: null as string | null, is_active: true };
 
 export default function AdminCategoriesPage() {
   const { categories, products, addCategory, updateCategory, deleteCategory: storeDeleteCategory } = useStore();
+  const { showToast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [search, setSearch] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filtered = categories.filter((c) => c.name.toLowerCase().includes(search.toLowerCase()));
 
-  function deleteCategory(id: string) {
+  async function deleteCategory(id: string) {
     if (confirm("Rostdan ham ushbu kategoriyani o'chirmoqchimisiz?")) {
-      storeDeleteCategory(id);
+      setDeletingId(id);
+      try {
+        await storeDeleteCategory(id);
+        showToast("Kategoriya muvaffaqiyatli o'chirildi", "info");
+      } catch (err) {
+        showToast("O'chirishda xatolik yuz berdi", "error");
+      } finally {
+        setDeletingId(null);
+      }
     }
   }
 
@@ -40,20 +52,30 @@ export default function AdminCategoriesPage() {
     setModalOpen(true);
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (editing) {
-      updateCategory(editing.id, form);
-    } else {
-      addCategory(form);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      if (editing) {
+        await updateCategory(editing.id, form);
+        showToast("Kategoriya muvaffaqiyatli yangilandi!", "success");
+      } else {
+        await addCategory(form);
+        showToast("Yangi kategoriya qo'shildi!", "success");
+      }
+      setModalOpen(false);
+    } catch (err) {
+      showToast("Kategoriyani saqlashda xatolik yuz berdi", "error");
+    } finally {
+      setIsSubmitting(false);
     }
-    setModalOpen(false);
   }
 
   return (
     <div>
       <AdminHeader title="Timeless — The Watch Gallery Admin" searchPlaceholder="Kategoriyalarni qidirish..." />
-      <div className="p-6">
+      <div className="p-3.5 sm:p-6">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold text-navy-900">Kategoriyalar</h1>
@@ -116,10 +138,11 @@ export default function AdminCategoriesPage() {
                 </button>
                 <button
                   onClick={() => deleteCategory(c.id)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-danger hover:bg-red-100 transition"
+                  disabled={deletingId === c.id}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-danger hover:bg-red-100 transition disabled:opacity-50"
                   title="O'chirish"
                 >
-                  <Trash2 size={14} />
+                  {deletingId === c.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                 </button>
               </div>
             </div>
@@ -163,7 +186,14 @@ export default function AdminCategoriesPage() {
                   <td className="p-3 text-right">
                     <div className="inline-flex items-center gap-1">
                       <button onClick={() => openEdit(c)} className="rounded-lg border border-navy-100 p-1.5 hover:bg-navy-50" title="Tahrirlash"><Pencil size={14} /></button>
-                      <button onClick={() => deleteCategory(c.id)} className="rounded-lg border border-red-100 p-1.5 text-danger hover:bg-red-50" title="O'chirish"><Trash2 size={14} /></button>
+                      <button
+                        onClick={() => deleteCategory(c.id)}
+                        disabled={deletingId === c.id}
+                        className="rounded-lg border border-red-100 p-1.5 text-danger hover:bg-red-50 disabled:opacity-50"
+                        title="O'chirish"
+                      >
+                        {deletingId === c.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -189,8 +219,15 @@ export default function AdminCategoriesPage() {
             <label htmlFor="cat-active" className="text-sm">Faol</label>
           </div>
           <div className="flex justify-end gap-3 border-t border-navy-100 pt-4">
-            <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg border border-navy-100 px-4 py-2.5 text-sm font-medium">Bekor qilish</button>
-            <button className="rounded-lg bg-navy-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-navy-800">{editing ? "Saqlash" : "Qo'shish"}</button>
+            <button type="button" disabled={isSubmitting} onClick={() => setModalOpen(false)} className="rounded-lg border border-navy-100 px-4 py-2.5 text-sm font-medium disabled:opacity-50">Bekor qilish</button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-lg bg-navy-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-navy-800 disabled:opacity-50"
+            >
+              {isSubmitting && <Loader2 size={16} className="animate-spin text-[#C5A059]" />}
+              <span>{isSubmitting ? "Saqlanmoqda..." : editing ? "Saqlash" : "Qo'shish"}</span>
+            </button>
           </div>
         </form>
       </Modal>

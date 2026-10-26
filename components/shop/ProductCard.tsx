@@ -3,7 +3,8 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
 import { SafeImage } from "@/components/ui/SafeImage";
 import Link from "next/link";
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, Loader2, Check } from "lucide-react";
+import { useToast } from "@/context/ToastContext";
 import { Product } from "@/types/database";
 import { formatSom, calcDiscount, cn, getProductPublicUrl } from "@/lib/utils";
 import { RatingStars } from "./RatingStars";
@@ -23,6 +24,31 @@ export const ProductCard = React.memo(function ProductCard({
   const { categories } = useStore();
   
   const cartItem = items.find((i) => i.productId === product.id);
+  const { showToast } = useToast();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (outOfStock || isAdding) return;
+    setIsAdding(true);
+    addItem(product.id);
+    showToast(`${product.name} savatchaga qo'shildi!`, "success");
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 600);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggle(product.id);
+    if (!wished) {
+      showToast(`${product.name} sevimlilarga qo'shildi!`, "success");
+    } else {
+      showToast(`${product.name} sevimlilardan olib tashlandi`, "info");
+    }
+  };
 
   const categoryName =
     product.category?.name ??
@@ -115,11 +141,7 @@ export const ProductCard = React.memo(function ProductCard({
     >
       {/* Sevimlilar (Wishlist) tugmasi - kartochkaning o'ng yuqori burchagida */}
       <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggle(product.id);
-        }}
+        onClick={handleToggleWishlist}
         aria-label="Sevimlilarga qo'shish"
         className={cn(
           "absolute z-30 flex items-center justify-center rounded-full transition-all duration-200 shadow-sm hover:scale-110 active:scale-95 touch-target",
@@ -282,18 +304,24 @@ export const ProductCard = React.memo(function ProductCard({
                 </div>
               ) : (
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    addItem(product.id);
-                  }}
-                  disabled={outOfStock}
-                  className="flex h-8 sm:h-11 w-full items-center justify-center gap-1 sm:gap-2 rounded-lg sm:rounded-xl bg-[#5E3023] border border-[#5E3023] px-1.5 sm:px-3 text-[11px] sm:text-sm font-medium text-white transition hover:bg-[#4A261C] disabled:opacity-40"
+                  onClick={handleAddToCart}
+                  disabled={outOfStock || isAdding}
+                  className="flex h-8 sm:h-11 w-full items-center justify-center gap-1 sm:gap-2 rounded-lg sm:rounded-xl bg-[#5E3023] border border-[#5E3023] px-1.5 sm:px-3 text-[11px] sm:text-sm font-medium text-white transition hover:bg-[#4A261C] disabled:opacity-40 active:scale-95 touch-target"
                 >
-                  <ShoppingCart size={13} className="sm:w-4 sm:h-4 text-[#C5A059]" />
-                  <span>
-                    <span className="hidden sm:inline">{outOfStock ? "Tugagan" : "Savatchaga"}</span>
-                    <span className="sm:hidden">{outOfStock ? "Yo'q" : "Savat"}</span>
-                  </span>
+                  {isAdding ? (
+                    <>
+                      <Loader2 size={13} className="sm:w-4 sm:h-4 animate-spin text-[#C5A059]" />
+                      <span className="text-[10px] sm:text-xs">Qo'shilmoqda...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart size={13} className="sm:w-4 sm:h-4 text-[#C5A059]" />
+                      <span>
+                        <span className="hidden sm:inline">{outOfStock ? "Tugagan" : "Savatchaga"}</span>
+                        <span className="sm:hidden">{outOfStock ? "Yo'q" : "Savat"}</span>
+                      </span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
