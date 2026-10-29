@@ -914,6 +914,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       badge: n.badge ?? null,
       link: n.link ?? null,
       button_text: n.button_text || "Batafsil",
+      product_ids: n.product_ids || [],
+      discount_percent: n.discount_percent ?? null,
       is_active: n.is_active ?? true,
       views_count: n.views_count ?? 0,
       published_at: n.published_at || new Date().toISOString(),

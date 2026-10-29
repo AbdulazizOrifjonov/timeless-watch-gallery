@@ -8,7 +8,6 @@ import {
   Pencil,
   Trash2,
   Eye,
-  EyeOff,
   CheckCircle2,
   Megaphone,
   Tag,
@@ -16,6 +15,10 @@ import {
   Link as LinkIcon,
   Loader2,
   ExternalLink,
+  Package,
+  Search,
+  Check,
+  Percent,
 } from "lucide-react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { StatCard } from "@/components/admin/StatCard";
@@ -23,7 +26,8 @@ import { Modal } from "@/components/admin/Modal";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useStore } from "@/lib/store";
 import { useToast } from "@/context/ToastContext";
-import { NewsItem, NewsType } from "@/types/database";
+import { NewsItem, NewsType, Product } from "@/types/database";
+import { formatSom } from "@/lib/utils";
 
 const EMPTY_FORM = {
   title: "",
@@ -34,6 +38,9 @@ const EMPTY_FORM = {
   badge: "",
   link: "",
   button_text: "Batafsil",
+  product_ids: [] as string[],
+  discount_percent: "",
+  applyDiscountToProducts: true,
   is_active: true,
 };
 
@@ -64,7 +71,7 @@ const TYPE_CONFIG: Record<
 };
 
 export default function AdminNewsPage() {
-  const { news, addNews, updateNews, deleteNews, toggleNews } = useStore();
+  const { news, products, updateProduct, addNews, updateNews, deleteNews, toggleNews } = useStore();
   const { showToast } = useToast();
 
   const [search, setSearch] = useState("");
@@ -75,6 +82,10 @@ export default function AdminNewsPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Modal product search & tab
+  const [prodSearch, setProdSearch] = useState("");
+  const [prodTab, setProdTab] = useState<"all" | "unsold" | "selected">("all");
 
   const filtered = useMemo(() => {
     return news.filter((item) => {
@@ -87,6 +98,28 @@ export default function AdminNewsPage() {
     });
   }, [news, search, typeFilter]);
 
+  // Modal product list filtering
+  const filteredModalProducts = useMemo(() => {
+    return products.filter((p) => {
+      const q = prodSearch.toLowerCase();
+      const matchSearch =
+        p.name.toLowerCase().includes(q) ||
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.sku && p.sku.toLowerCase().includes(q));
+
+      if (!matchSearch) return false;
+
+      if (prodTab === "selected") {
+        return form.product_ids.includes(p.id);
+      }
+      if (prodTab === "unsold") {
+        // Unsold / high stock products
+        return p.stock >= 3;
+      }
+      return true;
+    });
+  }, [products, prodSearch, prodTab, form.product_ids]);
+
   const activeCount = news.filter((n) => n.is_active).length;
   const promoCount = news.filter((n) => n.type === "aksiya" || n.type === "reklama").length;
   const totalViews = news.reduce((acc, n) => acc + (n.views_count || 0), 0);
@@ -94,6 +127,8 @@ export default function AdminNewsPage() {
   function openCreate() {
     setEditing(null);
     setForm(EMPTY_FORM);
+    setProdSearch("");
+    setProdTab("all");
     setModalOpen(true);
   }
 
@@ -108,9 +143,24 @@ export default function AdminNewsPage() {
       badge: item.badge || "",
       link: item.link || "",
       button_text: item.button_text || "Batafsil",
+      product_ids: item.product_ids || [],
+      discount_percent: item.discount_percent ? String(item.discount_percent) : "",
+      applyDiscountToProducts: true,
       is_active: item.is_active,
     });
+    setProdSearch("");
+    setProdTab("all");
     setModalOpen(true);
+  }
+
+  function toggleProductSelection(productId: string) {
+    setForm((f) => {
+      const exists = f.product_ids.includes(productId);
+      const nextIds = exists
+        ? f.product_ids.filter((id) => id !== productId)
+        : [...f.product_ids, productId];
+      return { ...f, product_ids: nextIds };
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -128,15 +178,19 @@ export default function AdminNewsPage() {
 
     setIsSubmitting(true);
     try {
+      const discountNum = Number(form.discount_percent) || null;
+
       const payload: Partial<NewsItem> = {
         title: form.title.trim(),
         subtitle: form.subtitle.trim() || null,
         content: form.content.trim(),
         image_url: form.image_url,
         type: form.type,
-        badge: form.badge.trim() || null,
+        badge: form.badge.trim() || (discountNum ? `Aksiya -${discountNum}%` : null),
         link: form.link.trim() || null,
         button_text: form.button_text.trim() || "Batafsil",
+        product_ids: form.product_ids,
+        discount_percent: discountNum,
         is_active: form.is_active,
       };
 
@@ -146,6 +200,23 @@ export default function AdminNewsPage() {
       } else {
         addNews(payload);
         showToast("Yangi e'lon muvaffaqiyatli qo'shildi!", "success");
+      }
+
+      // If user checked applyDiscountToProducts and set discountNum > 0
+      if (form.applyDiscountToProducts && discountNum && discountNum > 0 && form.product_ids.length > 0) {
+        for (const pId of form.product_ids) {
+          const prod = products.find((p) => p.id === pId);
+          if (prod) {
+            const basePrice = prod.old_price && prod.old_price > prod.price ? prod.old_price : prod.price;
+            const newPrice = Math.round((basePrice * (100 - discountNum)) / 100);
+            updateProduct(prod.id, {
+              price: newPrice,
+              old_price: basePrice,
+              discount: discountNum,
+            });
+          }
+        }
+        showToast(`${form.product_ids.length} ta mahsulotga -${discountNum}% chegirma qo'llandi!`, "success");
       }
 
       setModalOpen(false);
@@ -183,17 +254,17 @@ export default function AdminNewsPage() {
           <div>
             <h1 className="text-2xl font-bold text-navy-900 flex items-center gap-2">
               <Newspaper className="text-[#C5A059]" size={26} />
-              Yangiliklar & Reklama e'lonlari
+              Yangiliklar, Aksiyalar & Reklama
             </h1>
             <p className="text-sm text-navy-900/50 mt-0.5">
-              Do'kon yangiliklari, reklama bannerlari, maxsus aksiyalar va foydali tavsiyalarni boshqarish
+              Do'kon yangiliklari, sotilmagan mahsulotlarga chegirma berish, aksiya va reklama bannerlarini boshqarish
             </p>
           </div>
           <button
             onClick={openCreate}
             className="flex items-center gap-2 rounded-xl bg-[#5E3023] hover:bg-[#462016] border border-[#C5A059]/40 px-4 py-2.5 text-sm font-bold text-white transition shadow-md shadow-[#5E3023]/20 touch-target"
           >
-            <Plus size={18} /> Yangi reklama / yangilik qo'shish
+            <Plus size={18} /> Yangi aksiya / reklama qo'shish
           </button>
         </div>
 
@@ -293,24 +364,39 @@ export default function AdminNewsPage() {
 
                 {/* Sarlavha va Badge */}
                 <div className="absolute bottom-3 left-3 right-3 text-white">
-                  {item.badge && (
-                    <span className="mb-1.5 inline-block rounded bg-[#C5A059] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-navy-950 shadow-xs">
-                      {item.badge}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                    {item.badge && (
+                      <span className="rounded bg-[#C5A059] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-navy-950 shadow-xs">
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.discount_percent && (
+                      <span className="rounded bg-danger px-2 py-0.5 text-[10px] font-extrabold text-white">
+                        -{item.discount_percent}% Chegirma
+                      </span>
+                    )}
+                  </div>
                   <h3 className="text-base font-bold leading-snug drop-shadow-xs line-clamp-2">
                     {item.title}
                   </h3>
                 </div>
               </div>
 
-              {/* Matn va Qo'shimcha ma'lumotlar */}
+              {/* Matn va Aksiyadagi mahsulotlar belgisi */}
               <div className="px-3.5 pb-1 space-y-2">
                 {item.subtitle && (
                   <p className="text-xs text-navy-900/70 line-clamp-2 font-medium">
                     {item.subtitle}
                   </p>
                 )}
+
+                {item.product_ids && item.product_ids.length > 0 && (
+                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200/80 px-2.5 py-1 text-xs font-bold text-amber-900">
+                    <Package size={13} className="text-amber-700" />
+                    <span>{item.product_ids.length} ta mahsulot aksiyaga biriktirilgan</span>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between text-[11px] text-navy-900/50 pt-1">
                   <span>👁 {item.views_count?.toLocaleString("uz-UZ") || 0} marta ko'rildi</span>
                   <span>{new Date(item.published_at || item.created_at).toLocaleDateString("uz-UZ")}</span>
@@ -319,19 +405,13 @@ export default function AdminNewsPage() {
 
               {/* Boshqaruv tugmalari */}
               <div className="flex items-center justify-between p-3 border-t border-navy-50 bg-navy-50/30">
-                {item.link ? (
-                  <a
-                    href={item.link}
-                    target={item.link.startsWith("http") ? "_blank" : "_self"}
-                    rel="noreferrer"
-                    className="flex items-center gap-1 text-xs font-bold text-[#5E3023] hover:underline"
-                  >
-                    <ExternalLink size={13} />
-                    <span>Havolani ochish</span>
-                  </a>
-                ) : (
-                  <span className="text-xs text-navy-900/40">Havolasiz</span>
-                )}
+                <a
+                  href={`/news/${item.slug || item.id}`}
+                  className="flex items-center gap-1 text-xs font-bold text-[#5E3023] hover:underline"
+                >
+                  <ExternalLink size={13} />
+                  <span>Sahifada ko'rish</span>
+                </a>
 
                 <div className="flex items-center gap-2">
                   <button
@@ -355,7 +435,7 @@ export default function AdminNewsPage() {
 
           {filtered.length === 0 && (
             <div className="rounded-2xl border border-navy-100 bg-white p-10 text-center text-sm text-navy-900/40">
-              Hech qanday yangilik yoki reklama topilmadi.
+              Hech qanday yangilik yoki aksiya topilmadi.
             </div>
           )}
         </div>
@@ -365,10 +445,10 @@ export default function AdminNewsPage() {
           <table className="w-full text-left text-sm">
             <thead className="bg-navy-50 text-xs text-navy-900/60 uppercase tracking-wider">
               <tr>
-                <th className="p-3.5">Banner / Rasm</th>
+                <th className="p-3.5">Banner</th>
                 <th className="p-3.5">Sarlavha & Anons</th>
-                <th className="p-3.5">Turi & Badge</th>
-                <th className="p-3.5">Havola</th>
+                <th className="p-3.5">Turi & Chegirma</th>
+                <th className="p-3.5">Biriktirilgan mahsulotlar</th>
                 <th className="p-3.5">Ko'rishlar</th>
                 <th className="p-3.5">Holati</th>
                 <th className="p-3.5 text-right">Amallar</th>
@@ -407,24 +487,21 @@ export default function AdminNewsPage() {
                       >
                         {TYPE_CONFIG[item.type].icon} {TYPE_CONFIG[item.type].label}
                       </span>
-                      {item.badge && (
-                        <div className="text-[11px] font-bold text-[#5E3023]">{item.badge}</div>
+                      {item.discount_percent && (
+                        <div className="text-[11px] font-extrabold text-danger">
+                          -{item.discount_percent}% chegirma
+                        </div>
                       )}
                     </div>
                   </td>
                   <td className="p-3.5">
-                    {item.link ? (
-                      <a
-                        href={item.link}
-                        target={item.link.startsWith("http") ? "_blank" : "_self"}
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 rounded-lg bg-navy-50 px-2.5 py-1 text-xs font-semibold text-navy-900 hover:bg-navy-100 transition"
-                      >
-                        <LinkIcon size={12} className="text-[#C5A059]" />
-                        <span className="max-w-[120px] truncate">{item.button_text || "Havola"}</span>
-                      </a>
+                    {item.product_ids && item.product_ids.length > 0 ? (
+                      <div className="inline-flex items-center gap-1 rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-bold text-amber-900">
+                        <Package size={13} className="text-amber-700" />
+                        <span>{item.product_ids.length} ta soat</span>
+                      </div>
                     ) : (
-                      <span className="text-xs text-navy-900/40">—</span>
+                      <span className="text-xs text-navy-900/40">Biriktirilmagan</span>
                     )}
                   </td>
                   <td className="p-3.5 font-semibold text-xs text-navy-900">
@@ -444,6 +521,15 @@ export default function AdminNewsPage() {
                   </td>
                   <td className="p-3.5 text-right">
                     <div className="inline-flex items-center gap-1.5">
+                      <a
+                        href={`/news/${item.slug || item.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-lg border border-navy-100 p-1.5 hover:bg-navy-50 text-navy-700 transition"
+                        title="Saytda ko'rish"
+                      >
+                        <ExternalLink size={15} />
+                      </a>
                       <button
                         onClick={() => openEdit(item)}
                         className="rounded-lg border border-navy-100 p-1.5 hover:bg-navy-50 text-navy-700 transition"
@@ -471,14 +557,14 @@ export default function AdminNewsPage() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? "Yangilik / Reklamani tahrirlash" : "Yangi reklama / yangilik yaratish"}
-        width="max-w-2xl"
+        title={editing ? "Aksiya / Yangilikni tahrirlash" : "Yangi aksiya / e'lon yaratish"}
+        width="max-w-3xl"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <ImageUploader
             value={form.image_url}
             onChange={(v) => setForm((f) => ({ ...f, image_url: v }))}
-            label="Reklama / Yangilik rasmi (Banner) *"
+            label="Reklama / Aksiya rasmi (Banner) *"
             aspect="aspect-video"
             maxSize={1920}
           />
@@ -491,8 +577,8 @@ export default function AdminNewsPage() {
                 onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as NewsType }))}
                 className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-semibold text-navy-900 outline-none focus:border-navy-900 bg-white"
               >
-                <option value="yangilik">📰 Yangilik (Do'kon xabari)</option>
-                <option value="aksiya">🔥 Aksiya (Chegirma va sovg'alar)</option>
+                <option value="aksiya">🔥 Aksiya (Chegirma va sotilmagan mahsulotlar)</option>
+                <option value="yangilik">📰 Yangilik (Do'kon xabari / Kolleksiya)</option>
                 <option value="reklama">📢 Reklama (Telegram / Maxsus banner)</option>
                 <option value="tavsiya">💡 Tavsiya (Foydali maslahat)</option>
               </select>
@@ -505,7 +591,7 @@ export default function AdminNewsPage() {
               <input
                 value={form.badge}
                 onChange={(e) => setForm((f) => ({ ...f, badge: e.target.value }))}
-                placeholder="masalan: Aksiya -25%, TOP, Yangi"
+                placeholder="masalan: Aksiya -25%, Yangi, TOP"
                 className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-medium text-navy-900 outline-none focus:border-navy-900"
               />
             </div>
@@ -517,7 +603,7 @@ export default function AdminNewsPage() {
               required
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              placeholder="E'lon yoki yangilikning jozibali sarlavhasi..."
+              placeholder="E'lon yoki aksiyaning jozibali sarlavhasi..."
               className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-medium text-navy-900 outline-none focus:border-navy-900"
             />
           </div>
@@ -529,23 +615,187 @@ export default function AdminNewsPage() {
             <input
               value={form.subtitle}
               onChange={(e) => setForm((f) => ({ ...f, subtitle: e.target.value }))}
-              placeholder="Bosh sahifada ko'rinadigan qisqa izoh..."
+              placeholder="Bosh sahifada ko'rinadigan qisqa anons..."
               className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-medium text-navy-900 outline-none focus:border-navy-900"
             />
           </div>
 
           <div>
             <label className="mb-1 block text-sm font-bold text-navy-900">
-              Batafsil matn / Yangilik mazmuni *
+              Batafsil matn / Mazmuni *
             </label>
             <textarea
               required
-              rows={4}
+              rows={3}
               value={form.content}
               onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
-              placeholder="Batafsil ma'lumot, aksiya shartlari, xususiyatlar..."
+              placeholder="Batafsil ma'lumot, aksiya shartlari, yetkazib berish..."
               className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-medium text-navy-900 outline-none focus:border-navy-900"
             />
+          </div>
+
+          {/* ======================================================== */}
+          {/* SOTILMAGAN / TANLANGAN MAHSULOTLARGA CHEGIRMA BERISH */}
+          {/* ======================================================== */}
+          <div className="rounded-2xl border-2 border-[#C5A059]/40 bg-gradient-to-b from-[#FCFAF7] to-white p-4 sm:p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#C5A059]/20 pb-3">
+              <div>
+                <h3 className="text-sm font-bold text-navy-900 flex items-center gap-1.5">
+                  <Package className="text-[#C5A059]" size={18} />
+                  Aksiyada ishtirok etuvchi soatlar va Chegirma berish
+                </h3>
+                <p className="text-xs text-navy-900/60 mt-0.5">
+                  Sotilmagan yoki tanlangan soatlarni belgilang va ularga maxsus aksiya chegirmasini qo'llang
+                </p>
+              </div>
+
+              {/* Chegirma foizi inputi */}
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-xs font-bold text-navy-900">Chegirma:</span>
+                <div className="relative w-24">
+                  <input
+                    type="number"
+                    min="1"
+                    max="90"
+                    value={form.discount_percent}
+                    onChange={(e) => setForm((f) => ({ ...f, discount_percent: e.target.value }))}
+                    placeholder="25"
+                    className="w-full rounded-xl border border-navy-200 bg-white pr-7 pl-3 py-1.5 text-sm font-bold text-danger outline-none focus:border-danger"
+                  />
+                  <span className="absolute right-2.5 top-2 text-xs font-extrabold text-navy-400">%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Checkbox: apply discount */}
+            {form.discount_percent && Number(form.discount_percent) > 0 && form.product_ids.length > 0 && (
+              <div className="flex items-start gap-2 rounded-xl bg-amber-50 p-2.5 text-xs text-amber-950 border border-amber-200">
+                <input
+                  id="apply-discount-check"
+                  type="checkbox"
+                  checked={form.applyDiscountToProducts}
+                  onChange={(e) => setForm((f) => ({ ...f, applyDiscountToProducts: e.target.checked }))}
+                  className="mt-0.5 h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+                />
+                <label htmlFor="apply-discount-check" className="font-semibold cursor-pointer">
+                  Tanlangan {form.product_ids.length} ta soatning saytdagi haqiqiy narxiga -{form.discount_percent}% chegirma hisoblanib, eski narx bilan avtomatik qo'llansin.
+                </label>
+              </div>
+            )}
+
+            {/* Product selection tabs & search */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div className="flex items-center gap-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setProdTab("all")}
+                  className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                    prodTab === "all" ? "bg-navy-900 text-white" : "bg-white border border-navy-100 text-navy-900/70"
+                  }`}
+                >
+                  Barchasi ({products.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProdTab("unsold")}
+                  className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                    prodTab === "unsold" ? "bg-[#5E3023] text-white" : "bg-white border border-navy-100 text-navy-900/70"
+                  }`}
+                >
+                  Omborda ko'p soatlar (Sotilmagan)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setProdTab("selected")}
+                  className={`rounded-lg px-2.5 py-1 font-semibold transition ${
+                    prodTab === "selected" ? "bg-emerald-700 text-white" : "bg-white border border-navy-100 text-navy-900/70"
+                  }`}
+                >
+                  Tanlanganlar ({form.product_ids.length})
+                </button>
+              </div>
+
+              <div className="relative sm:w-60">
+                <input
+                  value={prodSearch}
+                  onChange={(e) => setProdSearch(e.target.value)}
+                  placeholder="Soat nomi yoki brend..."
+                  className="w-full rounded-lg border border-navy-200 bg-white pl-8 pr-3 py-1.5 text-xs outline-none focus:border-navy-900"
+                />
+                <Search size={13} className="absolute left-2.5 top-2.5 text-navy-400" />
+              </div>
+            </div>
+
+            {/* Scrollable Products List */}
+            <div className="max-h-60 overflow-y-auto divide-y divide-navy-100 rounded-xl border border-navy-200 bg-white">
+              {filteredModalProducts.map((p) => {
+                const isSelected = form.product_ids.includes(p.id);
+                const discountNum = Number(form.discount_percent) || 0;
+                const discountedPrice = discountNum > 0 ? Math.round((p.price * (100 - discountNum)) / 100) : null;
+
+                return (
+                  <div
+                    key={p.id}
+                    onClick={() => toggleProductSelection(p.id)}
+                    className={`flex items-center gap-3 p-2.5 hover:bg-navy-50/70 transition cursor-pointer ${
+                      isSelected ? "bg-amber-50/50" : ""
+                    }`}
+                  >
+                    <div
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition ${
+                        isSelected
+                          ? "bg-[#5E3023] border-[#5E3023] text-white"
+                          : "border-navy-300 bg-white"
+                      }`}
+                    >
+                      {isSelected && <Check size={13} strokeWidth={3} />}
+                    </div>
+
+                    <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-navy-50 border border-navy-100">
+                      {p.image && <Image src={p.image} alt={p.name} fill className="object-cover" />}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-xs text-navy-900 truncate">{p.name}</span>
+                        {p.brand && (
+                          <span className="rounded bg-navy-100 px-1.5 py-0.2 text-[10px] font-semibold text-navy-700 shrink-0">
+                            {p.brand}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-navy-900/60 mt-0.5">
+                        <span>SKU: {p.sku || "—"}</span>
+                        <span>•</span>
+                        <span className="font-medium text-emerald-700">Omborda: {p.stock} dona</span>
+                      </div>
+                    </div>
+
+                    {/* Price and Preview */}
+                    <div className="text-right shrink-0">
+                      {discountedPrice ? (
+                        <div>
+                          <span className="text-xs font-bold text-danger">
+                            {formatSom(discountedPrice)}
+                          </span>
+                          <span className="block text-[10px] text-navy-400 line-through">
+                            {formatSom(p.price)}
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs font-bold text-navy-900">{formatSom(p.price)}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {filteredModalProducts.length === 0 && (
+                <div className="p-8 text-center text-xs text-navy-400">
+                  Mos keluvchi soatlar topilmadi.
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -556,7 +806,7 @@ export default function AdminNewsPage() {
               <input
                 value={form.link}
                 onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
-                placeholder="/products yoki https://t.me/..."
+                placeholder="/products?sale=1 yoki bo'sh qoldiring"
                 className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-medium text-navy-900 outline-none focus:border-navy-900"
               />
             </div>
@@ -566,13 +816,13 @@ export default function AdminNewsPage() {
               <input
                 value={form.button_text}
                 onChange={(e) => setForm((f) => ({ ...f, button_text: e.target.value }))}
-                placeholder="Batafsil / Xarid qilish / Kanalga o'tish"
+                placeholder="Aksiyani ko'rish / Xarid qilish"
                 className="w-full rounded-xl border border-navy-200 px-3 py-2.5 text-sm font-medium text-navy-900 outline-none focus:border-navy-900"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-2">
+          <div className="flex items-center gap-2 pt-1">
             <input
               id="news-active"
               type="checkbox"

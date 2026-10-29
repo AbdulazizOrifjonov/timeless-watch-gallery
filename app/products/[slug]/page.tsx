@@ -30,7 +30,7 @@ const TELEGRAM_CHANNEL_URL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL || "ht
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const { products, categories, ready } = useStore();
+  const { products, categories, news, ready } = useStore();
   const { items, addItem, updateQuantity } = useCart();
   const { toggle, isWished } = useWishlist();
   const { showToast } = useToast();
@@ -38,6 +38,12 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   const product = products.find((p) => p.slug === slug || p.id === slug);
   const category = categories.find((c) => c.id === product?.category_id);
+  const activeCampaign = useMemo(() => {
+    if (!product) return null;
+    return news.find(
+      (n) => n.is_active && (n.type === "aksiya" || n.type === "reklama") && n.product_ids?.includes(product.id)
+    );
+  }, [news, product]);
 
   const [activeImage, setActiveImage] = useState(0);
   const [tab, setTab] = useState(TABS[0]);
@@ -252,6 +258,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               </div>
             )}
           </div>
+
+          {activeCampaign && (
+            <Link
+              href={`/news/${activeCampaign.slug || activeCampaign.id}`}
+              className="group flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-[#C5A059]/10 to-amber-500/5 border border-[#C5A059]/40 hover:border-[#C5A059] transition shadow-xs"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="text-xl">🔥</span>
+                <div>
+                  <div className="text-xs font-bold text-navy-900 group-hover:text-[#5E3023] transition-colors">
+                    {activeCampaign.badge || "Maxsus Aksiya"}: {activeCampaign.title}
+                  </div>
+                  <div className="text-[11px] text-navy-900/60 mt-0.5">
+                    Ushbu soat aksiya doirasida {activeCampaign.discount_percent ? `-${activeCampaign.discount_percent}% chegirma bilan` : "maxsus narxda"} taqdim etilmoqda
+                  </div>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-[#5E3023] group-hover:underline shrink-0 ml-2">
+                Aksiyani ko'rish →
+              </span>
+            </Link>
+          )}
 
           <div className="flex items-end gap-3 border-y border-navy-100 py-4">
             <span className="text-3xl font-bold text-navy-900">{formatSom(product.price)}</span>

@@ -1,11 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { use, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Calendar, Eye, Share2, Sparkles, ExternalLink } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calendar, Eye, Share2, Sparkles, ExternalLink, Package } from "lucide-react";
 import { Header } from "@/components/shop/Header";
 import { Footer } from "@/components/shop/Footer";
+import { ProductCard } from "@/components/shop/ProductCard";
 import { useStore } from "@/lib/store";
 
 export default function NewsDetailPage({
@@ -14,9 +15,14 @@ export default function NewsDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-  const { news } = useStore();
+  const { news, products } = useStore();
 
   const item = news.find((n) => n.slug === slug || n.id === slug);
+
+  const campaignProducts = useMemo(() => {
+    if (!item?.product_ids || item.product_ids.length === 0) return [];
+    return products.filter((p) => item.product_ids?.includes(p.id) && p.is_active);
+  }, [item, products]);
 
   const related = news
     .filter((n) => n.id !== item?.id && n.is_active)
@@ -64,13 +70,18 @@ export default function NewsDetailPage({
         </div>
 
         {/* Article Container */}
-        <article className="container-shop py-10 max-w-4xl space-y-8">
+        <article className="container-shop py-10 max-w-5xl space-y-8">
           {/* Header Info */}
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-2">
               {item.badge && (
                 <span className="rounded-lg bg-[#5E3023] border border-[#C5A059]/40 px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-white shadow-xs">
                   {item.badge}
+                </span>
+              )}
+              {item.discount_percent && (
+                <span className="rounded-lg bg-danger px-2.5 py-1 text-xs font-bold text-white shadow-xs">
+                  -{item.discount_percent}% Aksiya
                 </span>
               )}
               <span className="rounded-lg bg-navy-100 px-2.5 py-1 text-xs font-semibold text-navy-900 uppercase">
@@ -104,7 +115,7 @@ export default function NewsDetailPage({
           </div>
 
           {/* Banner Image */}
-          <div className="relative h-[260px] sm:h-[420px] w-full overflow-hidden rounded-3xl bg-navy-950 shadow-xl border border-navy-100">
+          <div className="relative h-[260px] sm:h-[440px] w-full overflow-hidden rounded-3xl bg-navy-950 shadow-xl border border-navy-100">
             <Image
               src={item.image_url}
               alt={item.title}
@@ -136,7 +147,7 @@ export default function NewsDetailPage({
                   </div>
                   <h4 className="text-lg font-bold">Ushbu aksiyadan foydalanishni xohlaysizmi?</h4>
                   <p className="text-xs text-white/70">
-                    Batafsil ma'lumot olish yoki buyurtma berish uchun havolaga o'ting.
+                    Batafsil ma'lumot olish yoki xaridni amalga oshirish uchun havolaga o'ting.
                   </p>
                 </div>
                 <a
@@ -151,6 +162,39 @@ export default function NewsDetailPage({
               </div>
             )}
           </div>
+
+          {/* ======================================================== */}
+          {/* AKSIYADA ISHTIROK ETAYOTGAN MAHSULOTLAR (REAL PRODUCT CARDS) */}
+          {/* ======================================================== */}
+          {campaignProducts.length > 0 && (
+            <section className="pt-6 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-navy-100 pb-4">
+                <div>
+                  <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#C5A059]">
+                    <Sparkles size={14} />
+                    <span>Aksiya mahsulotlari</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-navy-900 mt-1">
+                    Ushbu aksiya doirasidagi chegirmali soatlar ({campaignProducts.length} ta)
+                  </h2>
+                  <p className="text-xs text-navy-900/60 mt-0.5">
+                    Har bir soatni tanlab, uning to'liq sahifasiga o'tishingiz yoki to'g'ridan-to'g'ri savatchaga qo'shishingiz mumkin.
+                  </p>
+                </div>
+                {item.discount_percent && (
+                  <span className="rounded-xl bg-danger px-3.5 py-1.5 text-xs font-bold text-white shadow-xs self-start sm:self-auto">
+                    🔥 -{item.discount_percent}% Maxsus chegirma narxida
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                {campaignProducts.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Back Navigation */}
           <div className="flex items-center justify-between pt-4">

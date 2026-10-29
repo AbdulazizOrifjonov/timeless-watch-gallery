@@ -137,6 +137,8 @@ export interface NewsItem {
   badge?: string | null;
   link?: string | null;
   button_text?: string | null;
+  product_ids?: string[];
+  discount_percent?: number | null;
   is_active: boolean;
   views_count?: number;
   published_at: string;

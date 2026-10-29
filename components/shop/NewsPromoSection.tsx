@@ -86,6 +86,12 @@ export function NewsPromoSection() {
                       {item.subtitle}
                     </p>
                   )}
+                  {item.product_ids && item.product_ids.length > 0 && (
+                    <div className="inline-flex items-center gap-1.5 text-xs text-amber-900 font-bold bg-amber-50 border border-amber-200/80 rounded-lg px-2.5 py-1 w-fit mt-1">
+                      <Sparkles size={12} className="text-amber-700" />
+                      <span>{item.product_ids.length} ta soat {item.discount_percent ? `-${item.discount_percent}% chegirmada` : "aksiyada"}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-2 border-t border-navy-50 flex items-center justify-between">
