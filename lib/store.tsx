@@ -7,13 +7,14 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Category, Order, OrderStatus, Product, Promocode, Slider } from "@/types/database";
+import { Category, Order, OrderStatus, Product, Promocode, Slider, NewsItem } from "@/types/database";
 import { supabase } from "@/lib/supabase";
 import {
   DEFAULT_CATEGORIES,
   DEFAULT_PRODUCTS,
   DEFAULT_SLIDERS,
   DEFAULT_PROMOCODES,
+  DEFAULT_NEWS,
 } from "@/lib/default-data";
 
 function uid(prefix: string) {
@@ -41,6 +42,7 @@ interface StoreValue {
   sliders: Slider[];
   orders: Order[];
   promocodes: Promocode[];
+  news: NewsItem[];
   ready: boolean;
 
   addProduct: (p: Partial<Product>) => Product;
@@ -66,6 +68,11 @@ interface StoreValue {
   togglePromocode: (id: string) => void;
   applyPromocode: (code: string, subtotal: number) => { ok: boolean; promocode?: Promocode; discount: number; error?: string };
   
+  addNews: (n: Partial<NewsItem>) => NewsItem;
+  updateNews: (id: string, n: Partial<NewsItem>) => void;
+  deleteNews: (id: string) => void;
+  toggleNews: (id: string) => void;
+
   profileSidebarOpen: boolean;
   setProfileSidebarOpen: (v: boolean) => void;
 }
@@ -109,6 +116,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [sliders, setSliders] = useState<Slider[]>(DEFAULT_SLIDERS);
   const [orders, setOrders] = useState<Order[]>([]);
   const [promocodes, setPromocodes] = useState<Promocode[]>(DEFAULT_PROMOCODES);
+  const [news, setNews] = useState<NewsItem[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const localCustom: NewsItem[] = JSON.parse(localStorage.getItem("tml_custom_news") || "[]");
+        const deletedIds: string[] = JSON.parse(localStorage.getItem("tml_deleted_news") || "[]");
+        const updatedMap = JSON.parse(localStorage.getItem("tml_updated_news") || "{}");
+        const filteredDefaults = DEFAULT_NEWS.filter((n) => !deletedIds.includes(n.id));
+        const merged = [...localCustom, ...filteredDefaults].map((item) => {
+          if (updatedMap[item.id]) return { ...item, ...updatedMap[item.id] };
+          return item;
+        });
+        if (merged.length > 0) return merged;
+      } catch {}
+    }
+    return DEFAULT_NEWS;
+  });
   const [ready, setReady] = useState(false);
   const [profileSidebarOpen, setProfileSidebarOpen] = useState(true);
 
@@ -879,6 +902,92 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     [promocodes]
   );
 
+  const addNews = useCallback((n: Partial<NewsItem>) => {
+    const newItem: NewsItem = {
+      id: n.id || uid("news"),
+      title: n.title || "Yangi e'lon",
+      slug: n.slug || (n.title ? n.title.toLowerCase().replace(/[^a-z0-9а-яё]+/g, '-').replace(/(^-|-$)/g, '') : uid("news")),
+      subtitle: n.subtitle ?? null,
+      content: n.content || "",
+      image_url: n.image_url || "/banners/rolex_oyster_perpetual.jpg",
+      type: n.type || "yangilik",
+      badge: n.badge ?? null,
+      link: n.link ?? null,
+      button_text: n.button_text || "Batafsil",
+      is_active: n.is_active ?? true,
+      views_count: n.views_count ?? 0,
+      published_at: n.published_at || new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+    setNews((prev) => {
+      const updated = [newItem, ...prev];
+      try {
+        if (typeof window !== "undefined") {
+          const custom: NewsItem[] = JSON.parse(localStorage.getItem("tml_custom_news") || "[]");
+          localStorage.setItem("tml_custom_news", JSON.stringify([newItem, ...custom]));
+        }
+      } catch {}
+      return updated;
+    });
+    return newItem;
+  }, []);
+
+  const updateNews = useCallback((id: string, n: Partial<NewsItem>) => {
+    setNews((prev) => {
+      const updated = prev.map((item) => (item.id === id ? { ...item, ...n } : item));
+      try {
+        if (typeof window !== "undefined") {
+          const updatedMap = JSON.parse(localStorage.getItem("tml_updated_news") || "{}");
+          updatedMap[id] = { ...(updatedMap[id] || {}), ...n };
+          localStorage.setItem("tml_updated_news", JSON.stringify(updatedMap));
+
+          const custom: NewsItem[] = JSON.parse(localStorage.getItem("tml_custom_news") || "[]");
+          const customIdx = custom.findIndex((x) => x.id === id);
+          if (customIdx >= 0) {
+            custom[customIdx] = { ...custom[customIdx], ...n };
+            localStorage.setItem("tml_custom_news", JSON.stringify(custom));
+          }
+        }
+      } catch {}
+      return updated;
+    });
+  }, []);
+
+  const deleteNews = useCallback((id: string) => {
+    setNews((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      try {
+        if (typeof window !== "undefined") {
+          const deleted: string[] = JSON.parse(localStorage.getItem("tml_deleted_news") || "[]");
+          if (!deleted.includes(id)) {
+            deleted.push(id);
+            localStorage.setItem("tml_deleted_news", JSON.stringify(deleted));
+          }
+          const custom: NewsItem[] = JSON.parse(localStorage.getItem("tml_custom_news") || "[]");
+          localStorage.setItem("tml_custom_news", JSON.stringify(custom.filter((x) => x.id !== id)));
+        }
+      } catch {}
+      return updated;
+    });
+  }, []);
+
+  const toggleNews = useCallback((id: string) => {
+    setNews((prev) => {
+      const found = prev.find((x) => x.id === id);
+      if (!found) return prev;
+      const newVal = !found.is_active;
+      const updated = prev.map((item) => (item.id === id ? { ...item, is_active: newVal } : item));
+      try {
+        if (typeof window !== "undefined") {
+          const updatedMap = JSON.parse(localStorage.getItem("tml_updated_news") || "{}");
+          updatedMap[id] = { ...(updatedMap[id] || {}), is_active: newVal };
+          localStorage.setItem("tml_updated_news", JSON.stringify(updatedMap));
+        }
+      } catch {}
+      return updated;
+    });
+  }, []);
+
   return (
     <StoreContext.Provider
       value={{
@@ -887,6 +996,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         sliders,
         orders,
         promocodes,
+        news,
         ready,
         addProduct,
         updateProduct,
@@ -906,6 +1016,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         deletePromocode,
         togglePromocode,
         applyPromocode,
+        addNews,
+        updateNews,
+        deleteNews,
+        toggleNews,
         profileSidebarOpen,
         setProfileSidebarOpen,
       }}

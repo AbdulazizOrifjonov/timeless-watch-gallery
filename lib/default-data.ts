@@ -1,4 +1,4 @@
-import { Category, Product, Slider, Promocode } from "@/types/database";
+import { Category, Product, Slider, Promocode, NewsItem } from "@/types/database";
 
 export const DEFAULT_CATEGORIES: Category[] = [
   {
@@ -989,5 +989,72 @@ export const DEFAULT_PROMOCODES: Promocode[] = [
     min_order_amount: 2000000,
     is_active: true,
     created_at: "2025-01-01T00:00:00.000Z",
+  },
+];
+
+export const DEFAULT_NEWS: NewsItem[] = [
+  {
+    id: "news-rolex-new-collection-2025",
+    title: "Shveytsariya yangi kolleksiyasi Toshkentda: Rolex va Omega elit soatlari",
+    slug: "shveytsariya-yangi-kolleksiyasi-rolex-omega",
+    subtitle: "Timeless The Watch Gallery yangi mavsumning eng kutilgan Shveytsariya xronograflarini taqdim etadi.",
+    content: "Galereyamizga eng nufuzli Shveytsariya brendlaridan sara modellar yetib keldi. Rolex Oyster Perpetual, Omega Speedmaster hamda Seamaster kolleksiyasi endi rasmiy kafolat va xalqaro sertifikatlar bilan sotuvda. Har bir xaridorga maxsus sovg'a qutisi va bepul servis xizmati taqdim etiladi.",
+    image_url: "/banners/rolex_oyster_perpetual.jpg",
+    type: "yangilik",
+    badge: "Yangi kolleksiya",
+    link: "/categories/shveytsariya-soatlari",
+    button_text: "Kolleksiyani ko'rish",
+    is_active: true,
+    views_count: 1420,
+    published_at: "2026-10-25T10:00:00.000Z",
+    created_at: "2026-10-25T10:00:00.000Z",
+  },
+  {
+    id: "news-autumn-grand-sale",
+    title: "Katta Kuzgi Aksiya: Tanlangan barcha mexanik soatlarga 25% gacha chegirma!",
+    slug: "katta-kuzgi-aksiya-mexanik-soatlar",
+    subtitle: "Faqat shu oy oxirigacha avtomatik va ochiq skelet mexanizmli soatlar uchun maxsus narxlar e'lon qilindi.",
+    content: "Kuzgi mavsum munosabati bilan Timeless galereyasida barcha mexanik va avtomatik soatlar uchun 25% gacha chegirmalar boshlandi. Cheklangan miqdordagi Tsar Bomba, Tissot Powermatic 80 va Orient Open Heart soatlarini foydali narxlarda buyurtma qiling. Respublika bo'ylab yetkazib berish butunlay bepul!",
+    image_url: "/banners/iwc_tourbillon_skeleton.jpg",
+    type: "aksiya",
+    badge: "Aksiya -25%",
+    link: "/products?sale=1",
+    button_text: "Aksiyadagi soatlar",
+    is_active: true,
+    views_count: 2890,
+    published_at: "2026-10-24T12:00:00.000Z",
+    created_at: "2026-10-24T12:00:00.000Z",
+  },
+  {
+    id: "news-telegram-exclusive-promo",
+    title: "Rasmiy Telegram kanalimizda haftalik e'lonlar va yutuqli aksiyalar!",
+    slug: "telegram-kanal-yutuqli-aksiyalar",
+    subtitle: "Telegram kanalimizga obuna bo'ling va eng yangi kelgan modellar sharhi hamda maxsus promokodlarga ega bo'ling.",
+    content: "Har hafta Telegram kanalimiz a'zolari uchun eksklyuziv chegirmalar, soat sozlash va unga qarash bo'yicha ekspert maslahatlari berib boriladi. Yangi qo'shilgan obunachilarimiz uchun 200,000 so'mlik 'WELCOME' promokodi amal qilmoqda.",
+    image_url: "/banners/citizen_chronograph_tachymeter.jpg",
+    type: "reklama",
+    badge: "Reklama / Sovg'a",
+    link: "https://t.me/timless_watchgallery",
+    button_text: "Kanalga a'zo bo'lish",
+    is_active: true,
+    views_count: 3150,
+    published_at: "2026-10-22T14:30:00.000Z",
+    created_at: "2026-10-22T14:30:00.000Z",
+  },
+  {
+    id: "news-watch-care-guide",
+    title: "Mexanik va avtomatik soatlarni to'g'ri saqlash bo'yicha ekspert tavsiyalari",
+    slug: "mexanik-soatlarni-saqlash-tavsiyalari",
+    subtitle: "Qimmatbaho qo'l soatingiz o'n yillar mobaynida o'zining benuqson aniqligi va jilosini yo'qotmasligi uchun nimalarga e'tibor berish kerak?",
+    content: "1. Magnit maydonlardan yiroq tuting (noutbuk, dinamik, smartfonlar yonida qoldirmang).\n2. Har 3-4 yilda professional moylash va profilaktika qiling.\n3. Suvga chidamliligini (3ATM, 5ATM, 10ATM) hisobga oling va sho'r dengiz suvidan so'ng toza suv bilan yuving.\n4. Vaqtni sozlashda soat 21:00 dan 03:00 oralig'ida sana o'zgartirmang.",
+    image_url: "/banners/omega_speedmaster_chronograph.jpg",
+    type: "tavsiya",
+    badge: "Foydali tavsiya",
+    link: "/news",
+    button_text: "Batafsil o'qish",
+    is_active: true,
+    views_count: 980,
+    published_at: "2026-10-20T09:15:00.000Z",
+    created_at: "2026-10-20T09:15:00.000Z",
   },
 ];

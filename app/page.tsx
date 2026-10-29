@@ -19,6 +19,7 @@ const USPS = [
 
 import { useState, useMemo } from "react";
 import { LuxuryMarquee } from "@/components/shop/LuxuryMarquee";
+import { NewsPromoSection } from "@/components/shop/NewsPromoSection";
 import { DEFAULT_CATEGORIES } from "@/lib/default-data";
 
 export default function Home() {
@@ -101,6 +102,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Yangiliklar va Maxsus Reklama Aksiyalari */}
+      <NewsPromoSection />
 
       <div className="container-shop py-6 pb-16" id="featured">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">

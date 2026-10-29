@@ -36,6 +36,7 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-white/70">
             <li><Link href="/" className="hover:text-[#D8B775] transition">Bosh sahifa</Link></li>
             <li><Link href="/products?sale=1" className="hover:text-[#D8B775] transition">Aksiya va Chegirmalar</Link></li>
+            <li><Link href="/news" className="hover:text-[#D8B775] transition">Yangiliklar va E'lonlar</Link></li>
             <li><Link href="/about" className="hover:text-[#D8B775] transition">Galereya haqida</Link></li>
             <li><Link href="/delivery" className="hover:text-[#D8B775] transition">Yetkazib berish va Kafolat</Link></li>
             <li><Link href="/returns" className="hover:text-[#D8B775] transition">Qaytarish siyosati</Link></li>

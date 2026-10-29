@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-import { Heart, Search, ShoppingCart, User, Menu, X, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Package, LayoutDashboard, Phone, Send, ShieldCheck } from "lucide-react";
+import { Heart, Search, ShoppingCart, User, Menu, X, MapPin, CreditCard, Bell, Settings, HelpCircle, LogOut, Package, LayoutDashboard, Phone, Send, ShieldCheck, Newspaper } from "lucide-react";
 import { Logo } from "./Logo";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
@@ -73,6 +73,10 @@ export function Header({
               <a href={CONTACT_TEL} className="hover:text-[#C5A059] transition flex items-center gap-1">
                 <span className="text-[#C5A059] font-bold">{CONTACT_PHONE}</span>
               </a>
+              <span className="text-white/30">|</span>
+              <Link href="/news" className="hover:text-amber-200 transition text-[#D8B775] font-semibold flex items-center gap-1">
+                <span>📰 Yangiliklar & Aksiyalar</span>
+              </Link>
               <span className="text-white/30">|</span>
               <a href={TELEGRAM_CHANNEL_URL} target="_blank" rel="noreferrer" className="hover:text-amber-200 transition text-[#D8B775] font-semibold flex items-center gap-1">
                 <span>📢 Telegram Kanal</span>
@@ -555,6 +559,14 @@ export function Header({
                       {ids.length}
                     </span>
                   )}
+                </Link>
+                <Link
+                  href="/news"
+                  className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-navy-900 hover:bg-navy-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Newspaper size={18} className="text-[#C5A059]" />
+                  Yangiliklar & Aksiyalar
                 </Link>
                 <Link
                   href="/cart"

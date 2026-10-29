@@ -123,3 +123,22 @@ export interface Promocode {
   is_active: boolean;
   created_at: string;
 }
+
+export type NewsType = "yangilik" | "aksiya" | "reklama" | "tavsiya";
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  slug: string;
+  subtitle?: string | null;
+  content: string;
+  image_url: string;
+  type: NewsType;
+  badge?: string | null;
+  link?: string | null;
+  button_text?: string | null;
+  is_active: boolean;
+  views_count?: number;
+  published_at: string;
+  created_at: string;
+}

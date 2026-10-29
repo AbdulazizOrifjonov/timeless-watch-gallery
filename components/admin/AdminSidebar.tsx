@@ -8,6 +8,7 @@ import {
   Package,
   Heart,
   Images,
+  Newspaper,
   Tag,
   Ticket,
   ShoppingCart,
@@ -27,6 +28,7 @@ const NAV = [
   { href: "/admin/categories", label: "Kategoriyalar", icon: Tag },
   { href: "/admin/promocodes", label: "Promokodlar", icon: Ticket },
   { href: "/admin/sliders", label: "Sliderlar", icon: Images },
+  { href: "/admin/news", label: "Yangiliklar & Reklama", icon: Newspaper },
 
   { href: "/admin/orders", label: "Buyurtmalar", icon: ShoppingCart },
   { href: "/admin/customers", label: "Mijozlar", icon: Users },
